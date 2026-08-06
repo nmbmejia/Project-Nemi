@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Project Nemi</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23635bff'/%3E%3Ctext x='16' y='23' font-family='Arial, Helvetica, sans-serif' font-size='19' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EN%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/style.css" />
+<script>
+(function () {
+  var saved = localStorage.getItem('theme');
+  if (saved === 'light' || saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', saved);
+  }
+})();
+</script>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-left">
+    <span class="brand">Project <span class="brand-accent">Nemi</span></span>
+  </div>
+  <div class="topbar-search">
+    <span class="search-icon">&#9906;</span>
+    <input type="text" id="searchInput" placeholder="Find anything" autocomplete="off" />
+  </div>
+  <nav class="topbar-right">
+    <button type="button" class="theme-toggle-btn" id="themeToggleBtn" title="Toggle theme"></button>
+    <select id="labelFilterSelect" class="label-filter-select"></select>
+    <div class="label-manage-wrap">
+      <button type="button" class="label-manage-btn" id="manageLabelsBtn">Labels</button>
+      <div class="label-manage-panel" id="labelManagePanel" hidden></div>
+    </div>
+    <button type="button" class="hide-done-btn" id="hideDoneBtn">Hide done</button>
+    <div class="view-switch" id="viewSwitch">
+      <button type="button" class="view-switch-btn active" data-view="tree">Tree</button>
+      <button type="button" class="view-switch-btn" data-view="board">Board</button>
+      <button type="button" class="view-switch-btn" data-view="today">Today</button>
+      <button type="button" class="view-switch-btn" data-view="corkboard">Stickies</button>
+    </div>
+    <a href="#" class="topnav-link" id="refreshBtn">Refresh</a>
+  </nav>
+</header>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="sidebar-resizer" id="sidebarResizer"></div>
+  <main class="docpane" id="docPane"></main>
+  <aside class="rail" id="rail"></aside>
+</div>
+
+<main class="board-view" id="boardView" hidden></main>
+<main class="today-view" id="todayView" hidden></main>
+<main class="corkboard-view" id="corkboardView" hidden>
+  <div class="corkboard-toolbar">
+    <button type="button" class="corkboard-add-btn" id="corkboardAddBtn">+ New note</button>
+    <button type="button" class="corkboard-tidy-btn" id="corkboardTidyBtn">Tidy up</button>
+    <button type="button" class="corkboard-hide-done-btn" id="corkboardHideDoneBtn">Hide done</button>
+    <span class="corkboard-status" id="corkboardStatus"></span>
+  </div>
+  <div class="corkboard-canvas" id="corkboardCanvas"></div>
+</main>
+
+<div id="emptyState" class="empty-state" hidden>
+  <p class="empty-state-title">No tickets found yet.</p>
+  <ol class="empty-state-steps">
+    <li>Set <code>SCAN_ROOT</code> in <code>.env</code> to the folder containing the repos you want scanned (copy <code>.env.example</code> to get started), then restart the server.</li>
+    <li>Run <code>/start-ticket</code> (or create a <code>.docs/&lt;branch&gt;/</code> folder with a <code>Project&nbsp;Brief.md</code>) in one of those repos.</li>
+    <li>Hit <a href="#" id="emptyStateRefreshLink">Refresh</a> above, it'll show up here automatically.</li>
+  </ol>
+  <p class="hint">Currently scanning: <code id="emptyStateScanRoot"></code></p>
+</div>
+
+<script src="/highlight.js"></script>
+<script src="/markdown.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

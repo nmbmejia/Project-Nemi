@@ -1,0 +1,10 @@
+{
+  "name": "project-nemi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local ticket board that organizes .docs/<branch> ticket folders produced by dev skills (start-ticket etc).",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

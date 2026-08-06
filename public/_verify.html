@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Project Nemi</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23635bff'/%3E%3Ctext x='16' y='23' font-family='Arial, Helvetica, sans-serif' font-size='19' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EN%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/style.css" />
+<script>(function(){var q=new URLSearchParams(location.search);localStorage.setItem("view","corkboard");localStorage.setItem("hideDoneNotes","");localStorage.setItem("labelFilter","");localStorage.setItem("theme",q.get("theme")||"light");})();</script>
+<script>
+(function () {
+  var saved = localStorage.getItem('theme');
+  if (saved === 'light' || saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', saved);
+  }
+})();
+</script>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-left">
+    <span class="brand">Project <span class="brand-accent">Nemi</span></span>
+  </div>
+  <div class="topbar-search">
+    <span class="search-icon">&#9906;</span>
+    <input type="text" id="searchInput" placeholder="Find anything" autocomplete="off" />
+  </div>
+  <nav class="topbar-right">
+    <button type="button" class="theme-toggle-btn" id="themeToggleBtn" title="Toggle theme"></button>
+    <select id="labelFilterSelect" class="label-filter-select"></select>
+    <div class="label-manage-wrap">
+      <button type="button" class="label-manage-btn" id="manageLabelsBtn">Labels</button>
+      <div class="label-manage-panel" id="labelManagePanel" hidden></div>
+    </div>
+    <button type="button" class="hide-done-btn" id="hideDoneBtn">Hide done</button>
+    <div class="view-switch" id="viewSwitch">
+      <button type="button" class="view-switch-btn active" data-view="tree">Tree</button>
+      <button type="button" class="view-switch-btn" data-view="board">Board</button>
+      <button type="button" class="view-switch-btn" data-view="today">Today</button>
+      <button type="button" class="view-switch-btn" data-view="corkboard">Stickies</button>
+    </div>
+    <a href="#" class="topnav-link" id="refreshBtn">Refresh</a>
+  </nav>
+</header>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="sidebar-resizer" id="sidebarResizer"></div>
+  <main class="docpane" id="docPane"></main>
+  <aside class="rail" id="rail"></aside>
+</div>
+
+<main class="board-view" id="boardView" hidden></main>
+<main class="today-view" id="todayView" hidden></main>
+<main class="corkboard-view" id="corkboardView" hidden>
+  <div class="corkboard-toolbar">
+    <button type="button" class="corkboard-add-btn" id="corkboardAddBtn">+ New note</button>
+    <button type="button" class="corkboard-tidy-btn" id="corkboardTidyBtn">Tidy up</button>
+    <button type="button" class="corkboard-hide-done-btn" id="corkboardHideDoneBtn">Hide done</button>
+    <span class="corkboard-status" id="corkboardStatus"></span>
+  </div>
+  <div class="corkboard-canvas" id="corkboardCanvas"></div>
+</main>
+
+<div id="emptyState" class="empty-state" hidden>
+  <p>No tickets found yet.</p>
+  <p class="hint">Run <code>/start-ticket</code> in a repo under this board's scan root and it'll show up here automatically.</p>
+</div>
+
+<script src="/highlight.js"></script>
+<script src="/markdown.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
