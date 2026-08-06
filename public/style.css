@@ -91,10 +91,10 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #1a1a1a;
-    --bg-elev: #1a1a1a;
-    --bg-card: #202020;
-    --bg-hover: #2b2b2b;
+    --bg: #0a0a0a;
+    --bg-elev: #0a0a0a;
+    --bg-card: #141414;
+    --bg-hover: #1f1f1f;
     --bg-active: rgba(139, 131, 255, 0.14);
     --border: #3a3a3a;
     --text: #eaeaea;
@@ -136,10 +136,10 @@
 }
 
 :root[data-theme="dark"] {
-  --bg: #1a1a1a;
-  --bg-elev: #1a1a1a;
-  --bg-card: #202020;
-  --bg-hover: #2b2b2b;
+  --bg: #0a0a0a;
+  --bg-elev: #0a0a0a;
+  --bg-card: #141414;
+  --bg-hover: #1f1f1f;
   --bg-active: rgba(139, 131, 255, 0.14);
   --border: #3a3a3a;
   --text: #eaeaea;
@@ -915,6 +915,32 @@ ul.md-checklist li.task-done-group:hover { background: none; }
   padding: 2px 6px;
   border-radius: 6px;
 }
+
+.empty-state-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  max-width: 900px;
+  margin: 36px auto 0;
+  text-align: left;
+}
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.feature-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.feature-card-icon { font-size: 20px; line-height: 1; margin-bottom: 4px; }
+.feature-card-title { font-size: 13px; font-weight: 600; color: var(--text-dim); }
+.feature-card-desc { font-size: 12px; color: var(--text-faint); line-height: 1.5; }
 
 /* ---------- Board (kanban) view ---------- */
 
