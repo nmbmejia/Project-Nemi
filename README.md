@@ -63,6 +63,111 @@ your-repo/
 - Any other markdown in `.docs/` (outside a ticket folder) is shown as a browsable doc tree.
 - Checking a box, changing status, pinning, or labeling in the UI writes straight back to the markdown/JSON files, there's no separate database to get out of sync.
 
+## Generating tickets with AI
+
+You don't have to write the `.docs/<branch>/` folders by hand. Give an AI coding assistant (Claude Code, Cursor, etc.) the template below as a skill, rule, or reusable prompt, and it will turn a plain ticket description into the exact file structure Nemi reads. It's generic: no reference to Nemi or any specific tool is needed in the output, it just needs to produce plain markdown in the right shape.
+
+**Where to put it:**
+
+- **Claude Code**: save as a skill, e.g. `.claude/skills/start-ticket/SKILL.md` in the target repo (or `~/.claude/skills/` to use it everywhere), then invoke it with `/start-ticket <description>`.
+- **Cursor**: save as a project rule, e.g. `.cursor/rules/start-ticket.mdc`, or paste it into a chat as-is.
+- **Anything else**: paste the template into a system prompt, custom instructions, or just the start of a chat, then follow it with your ticket description.
+
+<details>
+<summary>Click to expand the template</summary>
+
+````markdown
+# Skill: start-ticket
+
+You turn a ticket description, bug report, or problem statement into a
+`.docs/<branch-name>/` folder in the current repo, following the exact
+structure below. Do not deviate from filenames or heading patterns, they are
+parsed by a dashboard tool that reads plain markdown, not a database.
+
+## 1. Pick a branch name
+
+Slugify the ticket into a short kebab-case branch name (e.g.
+`fix-login-timeout`, `add-csv-export`). Create the folder:
+
+```
+.docs/<branch-name>/
+```
+
+## 2. Write the brief
+
+Create `.docs/<branch-name>/Project Brief.md`:
+
+```markdown
+# <Short, human-readable ticket title>
+
+## Problem Statement
+
+<1-4 paragraphs: what's wrong or what's needed, who it affects, and any
+context the reader needs. Plain prose, no checkboxes here.>
+
+---
+```
+
+Rules:
+- The first `# heading` becomes the ticket title. Required.
+- The `## Problem Statement` section is required and must use that exact
+  heading text (case-insensitive). Everything under it until the next `##`
+  heading or a `---` line is treated as the problem excerpt.
+
+## 3. Break the work into phases (optional but recommended)
+
+For each logical phase of work, create a file named `phase-N-<slug>.md`
+where `N` is a number starting at 1 (e.g. `phase-1-setup.md`,
+`phase-2-implementation.md`, `phase-3-testing.md`). Phases are shown in
+numeric order regardless of the slug.
+
+```markdown
+# Phase 1: <phase name>
+
+**Goal:** <one sentence describing what this phase accomplishes>
+
+## Tasks
+
+- [ ] <task 1>
+- [ ] <task 2>
+- [ ] <task 3>
+```
+
+Rules:
+- Checkboxes must be `- [ ]` (not done) or `- [x]` / `- [X]` (done), using a
+  `-` or `*` bullet. Any other bullet/checkbox syntax will not be picked up.
+- The `**Goal:** ...` line is optional, if present it must be on its own
+  line and start exactly with `**Goal:**`.
+- Ticket progress is calculated from the ratio of checked to total
+  checkboxes across all phase files, don't hand-write a progress number
+  anywhere.
+
+## 4. Add supporting notes (optional)
+
+Any other `.md` file dropped in the same folder (not named like a brief and
+not named `phase-N-*.md`) is treated as a freeform note attached to the
+ticket, e.g. `research.md`, `decisions.md`, `api-notes.md`. Same rule as the
+brief: a leading `# Heading` becomes its display name.
+
+## 5. Output checklist
+
+Before finishing, confirm:
+- [ ] Folder is `.docs/<kebab-case-branch-name>/`
+- [ ] Contains exactly one of `Project Brief.md`, `brief.md`, or
+      `assessment.md`, with a `# Title` and a `## Problem Statement` section
+- [ ] Any phase files are named `phase-<number>-<slug>.md` and use real
+      `- [ ]` / `- [x]` checkboxes
+- [ ] Nothing outside this folder was modified
+
+Now use the ticket description the user provides to generate this
+structure. Ask for clarification only if the description is too vague to
+produce a meaningful Problem Statement.
+````
+
+</details>
+
+Once the folder exists (on any branch, in any repo under your `SCAN_ROOT`), Nemi will pick it up on its next 5-second poll or when you click **Refresh**, no restart needed.
+
 ## Features
 
 - **Tree view**: sidebar of every scanned repo and its tickets, with a doc pane and a right rail for ticket metadata.
