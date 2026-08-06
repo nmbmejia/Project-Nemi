@@ -17,6 +17,16 @@ No build step, no framework, no dependencies. One Node process, one static front
 - **Search**: filters across tickets and docs as you type.
 - **Light/dark theme**, remembered per browser.
 
+## Showcase
+
+| Tree view | Board view |
+|---|---|
+| ![Tree view](docs/screenshot-tree.png) | ![Board view](docs/screenshot-board.png) |
+
+| Today view | Stickies |
+|---|---|
+| ![Today view](docs/screenshot-today.png) | ![Stickies view](docs/screenshot-stickies.jpeg) |
+
 ## Requirements
 
 - Node.js 18+
@@ -256,18 +266,6 @@ produce a meaningful Problem Statement.
 </details>
 
 Once the folder exists (on any branch, in any repo under your `SCAN_ROOT`), Nemi will pick it up on its next 5-second poll or when you click **Refresh**, no restart needed.
-
-## Showcase
-
-<!-- Drop screenshots into docs/ and reference them below. -->
-
-| Tree view | Board view |
-|---|---|
-| ![Tree view](docs/screenshot-tree.png) | ![Board view](docs/screenshot-board.png) |
-
-| Today view | Stickies |
-|---|---|
-| ![Today view](docs/screenshot-today.png) | ![Stickies view](docs/screenshot-stickies.png) |
 
 ## Notes
 
