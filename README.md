@@ -6,6 +6,17 @@ No build step, no framework, no dependencies. One Node process, one static front
 
 ![Project Nemi empty state](docs/screenshot-empty-state.png)
 
+## Features
+
+- **Tree view**: sidebar of every scanned repo and its tickets, with a doc pane and a right rail for ticket metadata.
+- **Board view**: kanban by status, drag-free, click to update.
+- **Today view**: a focused slice of what's active right now.
+- **Stickies (corkboard)**: freeform sticky notes with drag/resize, a small markdown editor, optional reminders (desktop notifications on macOS via `terminal-notifier` if installed, otherwise in-app only), and the ability to pin a note to a ticket.
+- **Labels**: a small global label registry you can create, assign, and filter by.
+- **Checkout from the UI**: jump a repo to a ticket's branch with one click.
+- **Search**: filters across tickets and docs as you type.
+- **Light/dark theme**, remembered per browser.
+
 ## Requirements
 
 - Node.js 18+
@@ -245,17 +256,6 @@ produce a meaningful Problem Statement.
 </details>
 
 Once the folder exists (on any branch, in any repo under your `SCAN_ROOT`), Nemi will pick it up on its next 5-second poll or when you click **Refresh**, no restart needed.
-
-## Features
-
-- **Tree view**: sidebar of every scanned repo and its tickets, with a doc pane and a right rail for ticket metadata.
-- **Board view**: kanban by status, drag-free, click to update.
-- **Today view**: a focused slice of what's active right now.
-- **Stickies (corkboard)**: freeform sticky notes with drag/resize, a small markdown editor, optional reminders (desktop notifications on macOS via `terminal-notifier` if installed, otherwise in-app only), and the ability to pin a note to a ticket.
-- **Labels**: a small global label registry you can create, assign, and filter by.
-- **Checkout from the UI**: jump a repo to a ticket's branch with one click.
-- **Search**: filters across tickets and docs as you type.
-- **Light/dark theme**, remembered per browser.
 
 ## Showcase
 
