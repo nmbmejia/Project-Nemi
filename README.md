@@ -80,9 +80,10 @@ You don't have to write the `.docs/<branch>/` folders by hand. Give an AI coding
 # Skill: start-ticket
 
 You turn a ticket description, bug report, or problem statement into a
-`.docs/<branch-name>/` folder in the current repo, following the exact
-structure below. Do not deviate from filenames or heading patterns, they are
-parsed by a dashboard tool that reads plain markdown, not a database.
+`.docs/<branch-name>/` folder in the current repo, following the structure
+below. The filenames and heading patterns marked **required** are parsed by
+a dashboard tool that reads plain markdown, not a database, so don't deviate
+from those. Everything else is a recommended shape you can adapt.
 
 ## 1. Pick a branch name
 
@@ -93,7 +94,7 @@ Slugify the ticket into a short kebab-case branch name (e.g.
 .docs/<branch-name>/
 ```
 
-## 2. Write the brief
+## 2. Write the brief (required)
 
 Create `.docs/<branch-name>/Project Brief.md`:
 
@@ -102,24 +103,86 @@ Create `.docs/<branch-name>/Project Brief.md`:
 
 ## Problem Statement
 
-<1-4 paragraphs: what's wrong or what's needed, who it affects, and any
-context the reader needs. Plain prose, no checkboxes here.>
+<What's wrong or what's needed, who it affects, and any context the
+reader needs. Plain prose, no checkboxes here.>
 
 ---
+
+## Acceptance Criteria
+
+- [ ] <criterion>
+- [ ] <criterion>
+
+---
+
+## Overview
+
+<Optional. What this needs, what already exists to build on, what's
+net-new. Grounded in a quick look at the codebase, not guesses.>
+
+---
+
+## What To Do
+
+1. <concrete step>
+2. <concrete step>
+
+---
+
+## Open Questions
+
+<Optional, omit if nothing is unclear.>
+
+- ...
 ```
 
-Rules:
-- The first `# heading` becomes the ticket title. Required.
-- The `## Problem Statement` section is required and must use that exact
-  heading text (case-insensitive). Everything under it until the next `##`
-  heading or a `---` line is treated as the problem excerpt.
+Parsing rules (don't break these):
+- The first `# heading` becomes the ticket title. **Required.**
+- The `## Problem Statement` section is **required** and must use that
+  exact heading text (case-insensitive). Everything under it until the
+  next `##` heading or a `---` line is treated as the problem excerpt.
+- Every other section above is optional structure, not a parsing
+  requirement, adapt it to the ticket. Acceptance Criteria is the one worth
+  always keeping: it's what "done" means, and it's what phase tasks and
+  test cases should trace back to.
+
+Writing-quality rules (generic, apply these to any ticket doc you write, not
+just this one):
+- Plain, dev-layman language. Someone unfamiliar with this specific corner
+  of the codebase should be able to follow it. Spell out acronyms once.
+- Short. Bullets and short sentences beat paragraphs. If a section runs
+  past ~5 lines, cut to the essential points.
+- One fact per line. If a bullet has two or more independent facts (joined
+  by "and", a comma-splice, or a parenthetical carrying its own new fact),
+  split it into separate bullets rather than chaining clauses.
+- Concrete over abstract: name real files, functions, and screens. No
+  filler like "handle edge cases appropriately."
+- Omit an optional section entirely if it doesn't apply, don't leave it
+  empty as a placeholder.
+- Bold lead-in per bullet: start with a **bolded key term or file/function
+  name**, then the detail, so scanning just the bold words gives the gist.
+  E.g. `- **Login timeout**: session expires after 5 min idle, no warning
+  shown.` not `- Session expires after 5 min idle and no warning is shown,
+  which is the login timeout issue.`
+- These rules apply for the life of the doc, not just the first draft. If
+  you're asked to update it mid-implementation, keep new content in the
+  same terse style rather than letting it drift into narrative paragraphs.
+
+If you track ticket difficulty, a simple consistent scale helps at a
+glance: **1-3** small, well-understood change in familiar territory.
+**4-6** moderate, touches multiple files or an unfamiliar area, but a
+pattern to follow exists. **7-9** large, new architecture, cross-team
+coordination, or genuinely unclear scope. **10** don't start without
+breaking it down further first.
 
 ## 3. Break the work into phases (optional but recommended)
 
 For each logical phase of work, create a file named `phase-N-<slug>.md`
 where `N` is a number starting at 1 (e.g. `phase-1-setup.md`,
 `phase-2-implementation.md`, `phase-3-testing.md`). Phases are shown in
-numeric order regardless of the slug.
+numeric order regardless of the slug. Only do this if the work is big
+enough to benefit from chunking, skip it entirely for small, single-step
+tickets.
 
 ```markdown
 # Phase 1: <phase name>
@@ -133,7 +196,7 @@ numeric order regardless of the slug.
 - [ ] <task 3>
 ```
 
-Rules:
+Parsing rules:
 - Checkboxes must be `- [ ]` (not done) or `- [x]` / `- [X]` (done), using a
   `-` or `*` bullet. Any other bullet/checkbox syntax will not be picked up.
 - The `**Goal:** ...` line is optional, if present it must be on its own
@@ -142,12 +205,27 @@ Rules:
   checkboxes across all phase files, don't hand-write a progress number
   anywhere.
 
+Writing rule: keep tasks bite-sized, each checkbox should be doable and
+verifiable on its own, not "implement the feature." If a task needs its own
+sub-steps to explain, it's really two tasks. Keep each phase small enough
+to land as its own commit or reviewable chunk.
+
 ## 4. Add supporting notes (optional)
 
 Any other `.md` file dropped in the same folder (not named like a brief and
 not named `phase-N-*.md`) is treated as a freeform note attached to the
-ticket, e.g. `research.md`, `decisions.md`, `api-notes.md`. Same rule as the
-brief: a leading `# Heading` becomes its display name.
+ticket, e.g. `research.md`, `decisions.md`, `api-notes.md`, or `Test
+Cases.md`. Same rule as the brief: a leading `# Heading` becomes its
+display name.
+
+If the ticket has testable behavior (changes what the app does in response
+to some input or state), a `Test Cases.md` is worth writing: group
+scenarios into lettered sections, derive them like a QA engineer rather
+than just listing happy-path steps, equivalence partitioning (one case per
+valid/invalid class), boundary values (min, max, one-below, one-above,
+empty), state transitions, and negative cases (bad input, denied
+permission, timeout). Skip it entirely for pure refactors, chores, or
+docs-only tickets, there's nothing observable to test.
 
 ## 5. Output checklist
 
