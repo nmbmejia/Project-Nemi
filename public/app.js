@@ -2353,10 +2353,16 @@ setInterval(pollNoteReminders, 5000);
 
 function updateViewVisibility() {
   const hasTickets = state.tickets.length > 0;
-  document.getElementById('emptyState').hidden = hasTickets || state.view === 'corkboard';
+  // A repo can have a .docs folder full of loose docs and no tickets at all.
+  // Tree view can still show those, so it gates on docs, not tickets. Board
+  // and today render tickets only, so they stay ticket-gated.
+  const hasDocs = state.projects.some((p) => p.docsTree && p.docsTree.length > 0);
+  const treeVisible = hasDocs && state.view === 'tree';
+  const anyViewVisible = hasTickets || treeVisible;
+  document.getElementById('emptyState').hidden = anyViewVisible || state.view === 'corkboard';
   const scanRootEl = document.getElementById('emptyStateScanRoot');
   if (scanRootEl) scanRootEl.textContent = state.root || '';
-  document.querySelector('.layout').hidden = !hasTickets || state.view !== 'tree';
+  document.querySelector('.layout').hidden = !treeVisible;
   document.getElementById('boardView').hidden = !hasTickets || state.view !== 'board';
   document.getElementById('todayView').hidden = !hasTickets || state.view !== 'today';
   document.getElementById('corkboardView').hidden = state.view !== 'corkboard';

@@ -30,7 +30,7 @@ No build step, no framework, no dependencies. One Node process, one static front
 ## Requirements
 
 - Node.js 18+
-- Git repos with a `.docs/<branch-name>/` folder containing a `Project Brief.md` (or `brief.md` / `assessment.md`). These are typically produced by ticket-authoring dev skills/scripts, but any folder matching that shape works.
+- Git repos with a `.docs/<KEY>-<slug>/` folder holding at least one markdown file, where `<KEY>` is an issue key like `MBM-3000` (see [What counts as a ticket](#what-counts-as-a-ticket)). These are typically produced by ticket-authoring dev skills/scripts, but any folder matching that shape works. Unkeyed folders and loose markdown under `.docs/` are still browsable, just not as tickets.
 
 ## Setup
 
@@ -72,17 +72,70 @@ Nemi doesn't invent its own format, it reads folders you already have:
 ```
 your-repo/
   .docs/
-    your-branch-name/
+    MBM-3000-fix-login/     # issue key prefix, so this folder is a ticket
       Project Brief.md      # title (# heading) + Problem Statement section
       phase-1-setup.md      # optional: **Goal:** line + checkbox tasks
       phase-2-build.md
       any-other-notes.md    # anything else in the folder is shown as a note
 ```
 
-- A folder becomes a **ticket** if it contains `Project Brief.md`, `brief.md`, or `assessment.md`.
 - `phase-N-*.md` files are parsed for `- [ ]` / `- [x]` checkboxes; ticket progress and status (`not-started` / `in-progress` / `done`) are derived from how many are checked.
-- Any other markdown in `.docs/` (outside a ticket folder) is shown as a browsable doc tree.
 - Checking a box, changing status, pinning, or labeling in the UI writes straight back to the markdown/JSON files, there's no separate database to get out of sync.
+
+### What counts as a ticket
+
+Not every folder under `.docs/` is work to be tracked. Some are just reference material, and turning those into tickets would fill your board with things that have no status and no end. So Nemi classifies each **top-level** folder under `.docs/` by name.
+
+A folder is a **ticket** when both are true:
+
+1. Its name starts with an issue key: one or more letters, a hyphen, then digits (`MBM-3000`, `A-300`, `B-3`). A trailing slug is fine, `MBM-3000-fix-login` still matches. The key must be at the start, and the match is case-insensitive.
+2. It contains at least one `.md` file.
+
+Anything else, an unkeyed folder, a folder with no markdown, a loose `.md` sitting directly in `.docs/`, or anything nested deeper, stays a plain **doc node**: still listed and readable in the tree, just without ticket behavior.
+
+| Folder under `.docs/` | Classified as | Why |
+|---|---|---|
+| `MBM-3000/` | Ticket | Key, then digits |
+| `A-300/`, `B-3/` | Ticket | Short keys are fine |
+| `MBM-3000-fix-login/` | Ticket | Key at the start, slug ignored |
+| `mbm-3000/` | Ticket | Case-insensitive |
+| `architecture/` | Doc folder | No issue key |
+| `neilmarc.com/` | Doc folder | No issue key |
+| `notes-for-MBM-3000/` | Doc folder | Key is not at the start |
+| `2026-08-10/` | Doc folder | Digits before the hyphen, not letters |
+| `MBM-3000x/` | Doc folder | Digits must end the key or be followed by `-` |
+| `MBM-3001/` with no `.md` | Doc folder | Keyed, but nothing to read |
+| `scratch.md` (loose file) | Doc file | Not a folder |
+
+### What being a ticket gets you
+
+Doc nodes are only ever browsable text in the tree view. Promoting a folder to a ticket is what unlocks the rest of the app:
+
+- **Board, Today, and the right rail.** These render tickets only. A doc folder never appears in any of them.
+- **Progress and status.** Checkbox counts across `phase-N-*.md` roll up into a percentage and an auto-derived `not-started` / `in-progress` / `done`, overridable by hand.
+- **Interactive checkboxes.** Ticking a task in the UI writes back to the markdown file.
+- **Labels and pinning.** Both are keyed per ticket, so a doc folder can't carry either.
+- **One-click checkout.** Nemi runs `git checkout <branch>` using the ticket's folder name as the branch, which is why the folder name matching your branch name is worth keeping.
+
+### A brief is optional
+
+If the folder has `Project Brief.md`, `brief.md`, or `assessment.md` (checked in that order), it becomes the ticket's overview: `# heading` for the title, `## Problem Statement` for the board excerpt.
+
+Without one, Nemi promotes the first non-phase `.md` alphabetically instead, falling back to the first phase file. You lose the problem excerpt and the title comes from that file's `# heading`, but the ticket works. So this is enough:
+
+```
+.docs/
+  B-12-spike-caching/
+    findings.md           # becomes the overview, title from its # heading
+```
+
+And a ticket with no brief and no phases is still a ticket, just one with no progress bar:
+
+```
+.docs/
+  A-7-triage/
+    notes.md
+```
 
 ## Generating tickets with AI
 
@@ -101,23 +154,28 @@ You don't have to write the `.docs/<branch>/` folders by hand. Give an AI coding
 # Skill: start-ticket
 
 You turn a ticket description, bug report, or problem statement into a
-`.docs/<branch-name>/` folder in the current repo, following the structure
+`.docs/<KEY>-<slug>/` folder in the current repo, following the structure
 below. The filenames and heading patterns marked **required** are parsed by
 a dashboard tool that reads plain markdown, not a database, so don't deviate
 from those. Everything else is a recommended shape you can adapt.
 
 ## 1. Pick a branch name
 
-Slugify the ticket into a short kebab-case branch name (e.g.
-`fix-login-timeout`, `add-csv-export`). Create the folder:
+The folder name must start with an issue key: letters, a hyphen, then
+digits. If the user gave you one (`MBM-3000`, `A-300`), use it. If they
+didn't, ask for it rather than inventing one, the dashboard only treats
+key-prefixed folders as tickets.
+
+Follow the key with a short kebab-case slug describing the work, e.g.
+`MBM-3000-fix-login-timeout`, `A-300-add-csv-export`. Create the folder:
 
 ```
-.docs/<branch-name>/
+.docs/<KEY>-<slug>/
 ```
 
 ## 2. Write the brief (required)
 
-Create `.docs/<branch-name>/Project Brief.md`:
+Create `.docs/<KEY>-<slug>/Project Brief.md`:
 
 ```markdown
 # <Short, human-readable ticket title>
@@ -251,7 +309,8 @@ docs-only tickets, there's nothing observable to test.
 ## 5. Output checklist
 
 Before finishing, confirm:
-- [ ] Folder is `.docs/<kebab-case-branch-name>/`
+- [ ] Folder is `.docs/<KEY>-<kebab-case-slug>/`, starting with an issue key
+      like `MBM-3000` (letters, hyphen, digits)
 - [ ] Contains exactly one of `Project Brief.md`, `brief.md`, or
       `assessment.md`, with a `# Title` and a `## Problem Statement` section
 - [ ] Any phase files are named `phase-<number>-<slug>.md` and use real

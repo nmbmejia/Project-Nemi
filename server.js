@@ -252,20 +252,53 @@ function fromFileId(fileId) {
 
 // ---------- Build docs tree ----------
 
-// A ticket is any top-level folder directly under .docs/ containing a brief
-// file (checked in this order: "Project Brief.md", "brief.md",
-// "assessment.md" — newest naming first, older names kept for tickets
-// created before a rename). Everything else in .docs (other folders, loose
-// .md files, files inside those folders) is a generic doc node, shown as-is.
+// A ticket is a top-level folder directly under .docs/ whose name starts with
+// an issue key (letters, hyphen, digits: "MBM-3000", "A-300", "B-3"),
+// optionally followed by a slug ("MBM-3000-fix-login"), and which holds at
+// least one .md file. Every other folder under .docs/ is a generic doc
+// folder, still listed with its contents but without ticket status, phases,
+// or progress. Loose .md files directly under .docs/ and anything nested
+// deeper are generic doc nodes too.
+//
+// A brief is optional: if one of BRIEF_FILENAMES is present it is used as the
+// ticket's overview (checked in that order, newest naming first, older names
+// kept for tickets created before a rename), otherwise the first non-phase
+// .md alphabetically stands in, and failing that the first phase file.
 
 const BRIEF_FILENAMES = ['Project Brief.md', 'brief.md', 'assessment.md'];
 
+const PHASE_RE = /^phase-\d+.*\.md$/i;
+
+// Anchored at the start so a key-prefixed slug still matches, but a folder
+// that merely contains a key-like substring ("notes-for-MBM-3000") does not.
+const TICKET_KEY_RE = /^[A-Za-z]+-\d+(?:-|$)/;
+
+function isTicketFolderName(name) {
+  return TICKET_KEY_RE.test(name);
+}
+
+// Returns the path to use as the ticket's overview doc, or null if the folder
+// holds no markdown at all (in which case it is not a ticket).
 function resolveBriefPath(ticketDir) {
   for (const name of BRIEF_FILENAMES) {
     const p = path.join(ticketDir, name);
     if (fs.existsSync(p)) return p;
   }
-  return null;
+  let entries;
+  try {
+    entries = fs.readdirSync(ticketDir, { withFileTypes: true });
+  } catch (e) {
+    return null;
+  }
+  const mds = entries
+    .filter((e) => e.isFile() && !e.name.startsWith('.') && /\.md$/i.test(e.name))
+    .map((e) => e.name)
+    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  if (!mds.length) return null;
+  // Prefer a non-phase doc so the overview isn't "Phase 1" when the folder
+  // has both; a phase-only folder falls back to its first phase.
+  const preferred = mds.find((f) => !PHASE_RE.test(f)) || mds[0];
+  return path.join(ticketDir, preferred);
 }
 
 function buildFileDocNode(absPath) {
@@ -291,8 +324,10 @@ function buildTicketNode(ticketDir, branch, repoLabel) {
 
   const entries = fs.readdirSync(ticketDir);
 
+  const briefFilename = path.basename(assessmentPath);
+
   const phaseFiles = entries
-    .filter((f) => /^phase-\d+.*\.md$/i.test(f))
+    .filter((f) => PHASE_RE.test(f) && f !== briefFilename)
     .sort((a, b) => phaseSortKey(a) - phaseSortKey(b));
 
   const phases = [];
@@ -322,7 +357,7 @@ function buildTicketNode(ticketDir, branch, repoLabel) {
   }
 
   const notesFiles = entries
-    .filter((f) => /\.md$/i.test(f) && !BRIEF_FILENAMES.includes(f) && !/^phase-\d+.*\.md$/i.test(f))
+    .filter((f) => /\.md$/i.test(f) && f !== briefFilename && !PHASE_RE.test(f))
     .sort();
 
   const notes = [];
@@ -369,8 +404,9 @@ function buildTicketNode(ticketDir, branch, repoLabel) {
   };
 }
 
-// topLevel: only direct children of .docs/ are eligible to be tickets.
-// Deeper folders (e.g. .docs/review/) are always generic doc folders.
+// topLevel: only direct children of .docs/ are eligible to be tickets, and
+// only those named with an issue key (see isTicketFolderName). Deeper folders
+// (e.g. .docs/review/) and unkeyed ones are always generic doc folders.
 function scanDocsChildren(dir, depth, topLevel, repoLabel) {
   if (depth < 0) return [];
   let entries;
@@ -387,7 +423,7 @@ function scanDocsChildren(dir, depth, topLevel, repoLabel) {
   for (const e of entries) {
     const full = path.join(dir, e.name);
     if (e.isDirectory()) {
-      if (topLevel && resolveBriefPath(full)) {
+      if (topLevel && isTicketFolderName(e.name) && resolveBriefPath(full)) {
         nodes.push(buildTicketNode(full, e.name, repoLabel));
       } else {
         const children = scanDocsChildren(full, depth - 1, false, repoLabel);
