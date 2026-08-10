@@ -132,12 +132,29 @@ function mdToHtml(md) {
       const body = typeof highlightCode === 'function' ? highlightCode(code, lang) : escapeHtml(code);
       const label = typeof highlightLangLabel === 'function' ? highlightLangLabel(lang) : lang;
       const attr = label ? ` data-lang="${escapeHtml(label).replace(/"/g, '&quot;')}"` : '';
-      html.push(`<pre class="code-block"${attr}><code>${body}</code></pre>`);
+      // Copy button lives in its own header bar above the code, not overlaid
+      // on top of it — an overlay sits on top of arbitrary code text and
+      // reads as broken (low-contrast chip floating over glyphs) the moment
+      // a line runs underneath it.
+      const copyBtn = '<button type="button" class="code-copy-btn" aria-label="Copy code">'
+        + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>'
+        + '<span class="code-copy-label">Copy</span>'
+        + '</button>';
+      const header = `<div class="code-block-header"><span class="code-block-lang">${label ? escapeHtml(label) : ''}</span>${copyBtn}</div>`;
+      html.push(`<div class="code-block-wrap">${header}<pre class="code-block"${attr}><code>${body}</code></pre></div>`);
       continue;
     }
 
     if (/^---\s*$/.test(line)) {
-      html.push('<hr>');
+      // h2 already draws its own top border (.md-body h2), so a literal
+      // `---` written right before one would double up as two stacked
+      // divider lines. Skip the hr there; keep it everywhere else -- other
+      // heading levels don't get an auto border, and authors also use
+      // `---` on its own as a plain mid-content break.
+      let next = i + 1;
+      while (next < lines.length && lines[next].trim() === '') next++;
+      const nextIsH2 = next < lines.length && /^##\s+/.test(lines[next]);
+      if (!nextIsH2) html.push('<hr>');
       i++;
       continue;
     }

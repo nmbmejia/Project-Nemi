@@ -22,6 +22,7 @@
   --dark-box-text: #f0f0f0;
   --code-bg: #262626;
   --code-text: #f0f0f0;
+  --code-header-bg: #2f2f2f;
   --radius: 8px;
   --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -114,6 +115,7 @@
     --dark-box-text: #eaeaea;
     --code-bg: #141414;
     --code-text: #eaeaea;
+    --code-header-bg: #1c1c1c;
     --shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 
     /* Dimmed paper with light ink. The light-mode pastels are far too bright
@@ -159,6 +161,7 @@
   --dark-box-text: #eaeaea;
   --code-bg: #141414;
   --code-text: #eaeaea;
+  --code-header-bg: #1c1c1c;
   --shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 
   --paper-yellow: #4a431f; --edge-yellow: #5a5127; --ink-yellow: #f2e7b8;
@@ -751,6 +754,52 @@ body {
   color: var(--text-faint);
   margin-bottom: 10px;
 }
+.rail-copy-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+.rail-copy-row + .rail-copy-row { margin-top: 6px; }
+.rail-copy-value {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* The two-segment breadcrumb (e.g. ".docs / MBM-4317-...") reads clearly
+   wrapped onto two lines; a single-line truncated version tends to hide
+   the more useful segment and reads as a garbled fragment either way. */
+.rail-copy-path {
+  color: var(--text-dim);
+  font-size: 11.5px;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: break-word;
+  line-height: 1.45;
+}
+.rail-copy-btn {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-faint);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.rail-copy-btn:hover,
+.rail-copy-btn:focus-visible { background: var(--bg-hover); color: var(--text); }
+.rail-copy-btn.copied { color: var(--green); }
 .rail-progress-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .rail .progress-bar { flex: 1; height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; }
 .rail .progress-fill { height: 100%; background: var(--accent); border-radius: 999px; }
@@ -807,17 +856,69 @@ body {
 .md-body ol > li::marker { font-weight: 700; color: var(--accent); }
 .md-body ul:not(.md-checklist) > li { margin: 12px 0; line-height: 1.65; }
 .md-body ul:not(.md-checklist) > li::marker { color: var(--accent); }
-.md-body code { background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 5px; font-size: 0.87em; font-family: var(--font-mono); }
+/* overflow-wrap: long unbroken tokens (file paths, generated symbol names)
+   have no spaces for the browser to break on by default, so a single one
+   ends up widening .docpane past the viewport and running under the rail. */
+.md-body code { background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 5px; font-size: 0.87em; font-family: var(--font-mono); overflow-wrap: anywhere; }
 .md-body code.code-path { background: var(--bg-hover); color: var(--text-dim); }
-.md-body pre {
+/* Code block = header bar (lang + copy) stacked on the code itself, not an
+   overlay on top of it. An overlay sits on top of arbitrary code text and
+   any line running underneath reads as a broken, floating chip; a header
+   bar has its own row, so nothing is ever behind it. */
+.code-block-wrap {
+  margin: 16px 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--code-bg);
+}
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 8px 7px 14px;
+  background: var(--code-header-bg);
+  border-bottom: 1px solid var(--code-panel-edge);
+}
+.code-block-lang {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.md-body pre.code-block {
   background: var(--code-bg);
   color: var(--code-text);
   padding: 16px 18px;
-  border-radius: 10px;
   overflow-x: auto;
-  margin: 16px 0;
+  margin: 0;
+  border-radius: 0;
 }
-.md-body pre code { background: none; color: inherit; padding: 0; font-size: 13px; line-height: 1.6; }
+.md-body pre.code-block code { background: none; color: inherit; padding: 0; font-size: 13px; line-height: 1.6; }
+.code-copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: none;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+.code-copy-btn:hover,
+.code-copy-btn:focus-visible {
+  color: var(--code-text);
+  background: var(--code-copy-bg-hover, rgba(255, 255, 255, 0.1));
+}
+.code-copy-btn.copied { color: var(--green); border-color: currentColor; }
+.code-copy-btn svg { flex: none; }
 .md-body blockquote {
   border-left: 3px solid var(--amber);
   background: var(--callout-bg);
@@ -1457,6 +1558,17 @@ ul.md-checklist li.task-done-group:hover { background: none; }
   pointer-events: none;
 }
 .sticky-note:hover .sticky-note-md pre[data-lang]::after { opacity: 0.75; }
+/* Too cramped for a header bar on a sticky note; the hover corner label
+   above is enough context there. The wrap div just needs to get out of the
+   way so .sticky-note-md pre keeps its own panel look. */
+.sticky-note-md .code-block-header { display: none; }
+.sticky-note-md .code-block-wrap {
+  margin: 0 0 var(--sp-3);
+  border-radius: 0;
+  overflow: visible;
+  background: none;
+}
+.sticky-note-md .code-block-wrap pre { margin: 0; }
 /* Links stay in ink and lean on weight plus underline: an accent purple would
    fight every paper color. */
 .sticky-note-md a {

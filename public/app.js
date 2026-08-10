@@ -617,6 +617,36 @@ function groupCompletedTasks(ul, groupKey) {
 
 // ---------- Right rail ----------
 
+const COPY_ICON_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+
+// Fills el with fullText, wrapped up to maxLines. If that overflows, cuts
+// from the front (prefixed with an ellipsis) instead of the CSS-native
+// line-clamp-from-the-end, since the end of a file path (the filename) is
+// the part worth keeping visible. Binary search over how many trailing
+// characters fit, since text height only shrinks monotonically as more of
+// the front is dropped.
+function truncateFront(el, fullText, maxLines) {
+  el.textContent = fullText;
+  const lineHeight = parseFloat(getComputedStyle(el).lineHeight) || 16;
+  const maxHeight = lineHeight * maxLines + 1;
+  if (el.scrollHeight <= maxHeight) return;
+
+  let lo = 0;
+  let hi = fullText.length;
+  let best = 0;
+  while (lo <= hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    el.textContent = '…' + fullText.slice(fullText.length - mid);
+    if (el.scrollHeight <= maxHeight) {
+      best = mid;
+      lo = mid + 1;
+    } else {
+      hi = mid - 1;
+    }
+  }
+  el.textContent = '…' + fullText.slice(fullText.length - best);
+}
+
 function renderRail() {
   const rail = document.getElementById('rail');
   const t = state.tickets.find((x) => x.id === state.selectedTicketId);
@@ -630,6 +660,13 @@ function renderRail() {
   const progress = doc.kind === 'phase' ? doc.progress : t.overallProgress;
   const doneTasks = doc.kind === 'phase' ? doc.doneTasks : t.doneTasks;
   const totalTasks = doc.kind === 'phase' ? doc.totalTasks : t.totalTasks;
+  // doc.key is the fileId (path relative to SCAN_ROOT); its last segment is
+  // the real on-disk filename -- doc.name is a prettified display label
+  // (title-cased, extension stripped) and isn't what's actually on disk.
+  const pathParts = doc.key.split('/');
+  const fileName = pathParts[pathParts.length - 1];
+  const hasDir = pathParts.length > 1;
+  const fullPath = state.root ? `${state.root}/${doc.key}` : doc.key;
 
   rail.innerHTML = `
     <div class="rail-box-dark">
@@ -638,6 +675,19 @@ function renderRail() {
       ${t.repoBranch === t.branch
         ? '<div class="rail-branch-current">Current branch</div>'
         : '<button type="button" class="rail-switch-btn" id="switchBranchBtn">Switch to this branch</button>'}
+    </div>
+
+    <div class="rail-box-light">
+      <div class="rail-box-title">File</div>
+      <div class="rail-copy-row">
+        <span class="rail-copy-value" title="${escapeAttr(fileName)}">${escapeText(fileName)}</span>
+        <button type="button" class="rail-copy-btn" data-copy-value="${escapeAttr(fileName)}" aria-label="Copy file name">${COPY_ICON_SVG}</button>
+      </div>
+      ${hasDir ? `
+      <div class="rail-copy-row">
+        <span class="rail-copy-value rail-copy-path" id="railFilePath" title="${escapeAttr(fullPath)}"></span>
+        <button type="button" class="rail-copy-btn" data-copy-value="${escapeAttr(fullPath)}" aria-label="Copy file path">${COPY_ICON_SVG}</button>
+      </div>` : ''}
     </div>
 
     <div class="rail-box-light">
@@ -659,6 +709,9 @@ function renderRail() {
       <div id="labelSelectWrap"></div>
     </div>
   `;
+
+  const filePathEl = document.getElementById('railFilePath');
+  if (filePathEl) truncateFront(filePathEl, fullPath, 3);
 
   document.getElementById('statusSelect').addEventListener('change', (e) => {
     setTicketStatus(t.id, e.target.value);
@@ -2565,4 +2618,33 @@ sidebarResizerEl.addEventListener('mousedown', (e) => {
   }
   document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('mouseup', onMouseUp);
+});
+
+// ---------- Copy buttons (code blocks, rail file name/path) ----------
+// Delegated on document (not the doc pane or rail) since their innerHTML
+// gets replaced wholesale on every render; a listener bound to a child
+// would be thrown away each time.
+function flashCopied(btn) {
+  const label = btn.querySelector('.code-copy-label');
+  const prevLabel = label ? label.textContent : '';
+  btn.classList.add('copied');
+  if (label) label.textContent = 'Copied';
+  clearTimeout(btn._copyResetTimer);
+  btn._copyResetTimer = setTimeout(() => {
+    btn.classList.remove('copied');
+    if (label) label.textContent = prevLabel;
+  }, 1400);
+}
+
+document.addEventListener('click', (e) => {
+  const codeBtn = e.target.closest('.code-copy-btn');
+  if (codeBtn) {
+    const code = codeBtn.closest('.code-block-wrap')?.querySelector('code');
+    if (code) navigator.clipboard.writeText(code.innerText).then(() => flashCopied(codeBtn));
+    return;
+  }
+  const railBtn = e.target.closest('.rail-copy-btn');
+  if (railBtn) {
+    navigator.clipboard.writeText(railBtn.dataset.copyValue || '').then(() => flashCopied(railBtn));
+  }
 });
