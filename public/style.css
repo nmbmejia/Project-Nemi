@@ -428,13 +428,13 @@ body {
 .layout[hidden] { display: none; }
 
 .sidebar {
-  width: 290px;
+  width: 300px;
   flex-shrink: 0;
   height: calc(100vh - 56px);
   position: sticky;
   top: 56px;
   overflow-y: auto;
-  padding: 22px 14px 40px;
+  padding: 22px 16px 40px;
 }
 
 .sidebar-resizer {
@@ -493,21 +493,22 @@ body {
 
 /* Shared row template: chevron/icon is always the first child, at a fixed
    position, on every row that has one, so the "this expands" affordance
-   never shifts between tree levels. */
+   never shifts between tree levels. Compact single-line rows throughout. */
 .tree-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
   background: none;
   border: none;
   text-align: left;
   padding: 8px 10px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  line-height: 1.4;
+  line-height: 1.3;
   color: var(--text-dim);
   font-family: inherit;
+  font-size: 14px;
 }
 .tree-row:hover { background: var(--bg-hover); color: var(--text); }
 
@@ -522,18 +523,29 @@ body {
 }
 
 .chevron {
-  width: 14px;
+  width: 15px;
+  height: 15px;
   flex-shrink: 0;
   color: var(--text-faint);
-  font-size: 13px;
   transition: transform 0.12s;
-  display: inline-block;
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .chevron.open { transform: rotate(90deg); }
 
+.tree-icon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+}
+
 /* ---- Level 1: Project ---- */
-.tree-project { margin-top: 16px; }
+.tree-project { margin-top: 14px; }
 .tree-project:first-child { margin-top: 0; }
 .tree-project > .tree-row {
   font-size: 14px;
@@ -541,135 +553,81 @@ body {
   color: var(--text);
 }
 
-/* Guide-line + indent for a project's children (tickets) */
+/* Indent for a project's children (tickets); padding-only, no guide line. */
 .tree-project-body {
   display: grid;
   grid-template-rows: 0fr;
-  margin: 0 0 0 18px;
-  padding-left: 10px;
-  border-left: 1px solid var(--border);
+  margin-left: 22px;
   transition: grid-template-rows 0.2s ease, margin 0.2s ease;
 }
 .tree-project-body.expanded { grid-template-rows: 1fr; margin-top: 2px; }
 .tree-project-body-inner { overflow: hidden; min-height: 0; }
 
-/* ---- Level 2: Ticket ---- */
+/* ---- Level 2: Ticket / folder ---- */
 .tree-ticket-header {
-  font-size: 13.5px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
   color: var(--text);
 }
 
-.tree-row.tree-row-2line {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 4px;
-}
-.tree-row-line1 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-}
-/* Ticket titles wrap to a 2nd line instead of clipping mid-word (a title
-   truncated to "MBM-4267: MBM 4268 MBM 4269 Mobile Deep ..." tells you
-   nothing) — chevron stays top-aligned once the title wraps. */
-.tree-row-line1 .tree-title {
-  overflow: visible;
-  text-overflow: clip;
-  white-space: normal;
-  line-height: 1.35;
-}
-.tree-row.tree-row-2line .tree-row-line1 { align-items: flex-start; }
-.tree-row.tree-row-2line .tree-row-line1 .chevron { margin-top: 2px; }
-
 .tree-pin-btn {
   flex-shrink: 0;
-  margin-left: auto;
-  margin-top: 1px;
+  margin-left: 2px;
   border: none;
   background: none;
-  font-size: 12px;
-  line-height: 1;
-  padding: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
   border-radius: 4px;
   cursor: pointer;
+  color: var(--text-faint);
   opacity: 0;
-  filter: grayscale(1);
   transition: opacity 0.12s;
 }
 .tree-ticket-header:hover .tree-pin-btn { opacity: 0.55; }
-.tree-pin-btn:hover { opacity: 1 !important; background: var(--bg-hover); }
-.tree-pin-btn.pinned { opacity: 1; filter: none; }
-.tree-row-line2 {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  padding-left: 22px;
-}
+.tree-pin-btn:hover { opacity: 1 !important; background: var(--bg-active); color: var(--accent); }
+.tree-pin-btn.pinned { opacity: 1; color: var(--accent); }
 
-.status-badge {
+.tree-status-dot {
   flex-shrink: 0;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-faint);
-  background: var(--bg-hover);
-  padding: 2px 7px;
-  border-radius: 999px;
-  white-space: nowrap;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-faint);
 }
-.status-badge.in-progress { color: var(--amber); background: var(--amber-soft); }
-.status-badge.done { color: var(--green); background: var(--green-soft); }
+.tree-status-dot.in-progress { background: var(--amber); }
+.tree-status-dot.done { background: var(--green); }
 
-.current-branch-badge {
-  flex-shrink: 0;
-  display: inline-flex;
-  color: var(--accent);
-}
-
-/* Guide-line + indent for a ticket's children (docs) */
+/* Indent for a ticket's children (docs); padding-only, no guide line. */
 .tree-ticket-body {
   display: grid;
   grid-template-rows: 0fr;
-  margin: 0 0 0 18px;
-  padding-left: 8px;
-  border-left: 1px solid var(--border);
+  margin-left: 22px;
   transition: grid-template-rows 0.2s ease, margin 0.2s ease;
 }
-.tree-ticket-body.expanded { grid-template-rows: 1fr; margin: 2px 0 2px 18px; }
+.tree-ticket-body.expanded { grid-template-rows: 1fr; margin-top: 2px; }
 .tree-ticket-body-inner { overflow: hidden; min-height: 0; }
 
 /* ---- Level 3: Doc (leaf) ---- */
-.tree-doc-icon {
-  width: 14px;
-  flex-shrink: 0;
-  text-align: center;
-  font-size: 8px;
-  line-height: 1;
-  color: var(--text-faint);
-}
+.tree-doc-icon { color: var(--text-faint); }
 .tree-doc {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 400;
   color: var(--text-dim);
 }
-.tree-doc.active { background: var(--bg-active); color: var(--accent); font-weight: 600; }
+.tree-doc.active {
+  background: var(--bg-active);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--accent);
+}
 .tree-doc.active .tree-doc-icon { color: var(--accent); }
 
 .tree-notes-toggle { color: var(--text-faint); font-size: 12px; font-weight: 600; }
-.tree-notes-toggle .chevron { width: 14px; font-size: 11px; }
+.tree-notes-toggle .chevron { width: 12px; height: 12px; }
 
-.tree-folder-icon {
-  width: 14px;
-  flex-shrink: 0;
-  text-align: center;
-  font-size: 11px;
-  line-height: 1;
-  opacity: 0.75;
-}
+.tree-folder-icon { color: var(--text-faint); opacity: 0.85; }
 
 /* ---------- Doc pane ---------- */
 

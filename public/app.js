@@ -213,6 +213,20 @@ function matchesActiveLabel(t) {
 
 // ---------- Sidebar ----------
 
+// Small inline SVG icon set for the sidebar tree (16x16, stroke-based,
+// currentColor so they pick up row text color and theme automatically).
+const TREE_ICONS = {
+  chevron: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>',
+  folder: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7z"></path></svg>',
+  doc: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"></path><polyline points="15 2 15 7 20 7"></polyline></svg>',
+  pin: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5l-2 3z"></path></svg>',
+  branch: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>',
+};
+
+function treeIcon(name, extraClass) {
+  return `<span class="tree-icon${extraClass ? ' ' + extraClass : ''}">${TREE_ICONS[name]}</span>`;
+}
+
 function renderSidebar() {
   const container = document.getElementById('sidebar');
   const q = state.search.trim().toLowerCase();
@@ -259,7 +273,7 @@ function buildProjectEl(project, nodes, q) {
     (t) => t.repo === project.repo && t.status !== 'done' && matchesActiveLabel(t)
   ).length;
   const countBadge = openCount ? `<span class="project-count-badge">${openCount} open</span>` : '';
-  header.innerHTML = `<span class="chevron ${expanded ? 'open' : ''}">&#9656;</span><span class="tree-title" title="${escapeText(projectLabel)}">${escapeText(projectLabel)}</span>${countBadge}`;
+  header.innerHTML = `<span class="chevron ${expanded ? 'open' : ''}">${treeIcon('chevron')}</span><span class="tree-title" title="${escapeText(projectLabel)}">${escapeText(projectLabel)}</span>${countBadge}`;
   wrap.appendChild(header);
 
   const body = document.createElement('div');
@@ -298,7 +312,7 @@ function buildDocsNodeEl(node, project, q, parentPath) {
 function buildFileDocEl(node, project) {
   const btn = document.createElement('button');
   btn.className = 'tree-row tree-doc' + (state.selectedKey === node.fileId ? ' active' : '');
-  btn.innerHTML = `<span class="tree-doc-icon">&#8226;</span><span class="tree-title" title="${escapeText(node.name)}">${escapeText(node.name)}</span>`;
+  btn.innerHTML = `${treeIcon('doc', 'tree-doc-icon')}<span class="tree-title" title="${escapeText(node.name)}">${escapeText(node.name)}</span>`;
   btn.addEventListener('click', () => selectStandaloneDoc(project.repo, node));
   return btn;
 }
@@ -313,7 +327,7 @@ function buildFolderDocEl(node, project, q, parentPath) {
 
   const header = document.createElement('button');
   header.className = 'tree-row tree-ticket-header';
-  header.innerHTML = `<span class="chevron ${expanded ? 'open' : ''}">&#9656;</span><span class="tree-folder-icon">&#128193;</span><span class="tree-title" title="${escapeText(node.name)}">${escapeText(node.name)}</span>`;
+  header.innerHTML = `<span class="chevron ${expanded ? 'open' : ''}">${treeIcon('chevron')}</span>${treeIcon('folder', 'tree-folder-icon')}<span class="tree-title" title="${escapeText(node.name)}">${escapeText(node.name)}</span>`;
   wrap.appendChild(header);
 
   const body = document.createElement('div');
@@ -350,29 +364,19 @@ function buildTicketEl(t, q) {
   const header = document.createElement('div');
   header.className = 'tree-row tree-ticket-header';
   const ticketLabel = ticketKeyLabel(t.branch);
-  const branchBadge = isCurrentBranch
-    ? `<span class="current-branch-badge" title="Repo is currently on this branch">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="6" y1="3" x2="6" y2="15"></line>
-          <circle cx="18" cy="6" r="3"></circle>
-          <circle cx="6" cy="18" r="3"></circle>
-          <path d="M18 9a9 9 0 0 1-9 9"></path>
-        </svg>
-      </span>`
-    : '';
-  header.classList.add('tree-row-2line');
+  // Label/stale/branch metadata is folded into the row's title tooltip
+  // instead of always-on badges, keeping the row a single compact line;
+  // full metadata is still visible once the ticket's brief is open.
+  const metaParts = [t.branch];
+  if (t.label) metaParts.push(`Label: ${t.label}`);
+  if (isStale(t)) metaParts.push(`Stale (no updates in ${STALE_DAYS}+ days)`);
+  if (isCurrentBranch) metaParts.push('Repo is currently on this branch');
   header.innerHTML = `
-    <span class="tree-row-line1">
-      <span class="chevron ${expanded ? 'open' : ''}">&#9656;</span>
-      <span class="tree-title" title="${escapeText(t.branch)}">${escapeText(ticketLabel)}</span>
-      <button type="button" class="tree-pin-btn${t.pinned ? ' pinned' : ''}" title="${t.pinned ? 'Unpin' : 'Pin to top'}">&#128204;</button>
-    </span>
-    <span class="tree-row-line2">
-      <span class="status-badge ${t.status}">${STATUS_LABEL[t.status]}</span>
-      ${t.label ? `<span class="label-badge" style="${labelColorStyle(t.label)}">${escapeText(t.label)}</span>` : ''}
-      ${isStale(t) ? '<span class="stale-badge" title="No updates in ' + STALE_DAYS + '+ days">Stale</span>' : ''}
-      ${branchBadge}
-    </span>
+    <span class="chevron ${expanded ? 'open' : ''}">${treeIcon('chevron')}</span>
+    ${treeIcon('doc', 'tree-doc-icon')}
+    <span class="tree-title" title="${escapeText(metaParts.join(' • '))}">${escapeText(ticketLabel)}</span>
+    <span class="tree-status-dot ${t.status}" title="${STATUS_LABEL[t.status]}"></span>
+    <button type="button" class="tree-pin-btn${t.pinned ? ' pinned' : ''}" title="${t.pinned ? 'Unpin' : 'Pin to top'}">${treeIcon('pin')}</button>
   `;
   header.querySelector('.tree-pin-btn').addEventListener('click', (e) => {
     e.stopPropagation();
@@ -395,7 +399,7 @@ function buildTicketEl(t, q) {
   const buildDocBtn = (d) => {
     const btn = document.createElement('button');
     btn.className = 'tree-row tree-doc' + (state.selectedKey === d.key ? ' active' : '');
-    btn.innerHTML = `<span class="tree-doc-icon">&#8226;</span><span class="tree-title" title="${escapeText(d.name)}">${escapeText(d.name)}</span>`;
+    btn.innerHTML = `${treeIcon('doc', 'tree-doc-icon')}<span class="tree-title" title="${escapeText(d.name)}">${escapeText(d.name)}</span>`;
     btn.addEventListener('click', () => selectDoc(t.id, d.key));
     return btn;
   };
@@ -407,7 +411,7 @@ function buildTicketEl(t, q) {
     const notesExpanded = !!q || noteSelected || state.expandedNoteGroups.has(t.id);
     const notesToggle = document.createElement('button');
     notesToggle.className = 'tree-row tree-doc tree-notes-toggle';
-    notesToggle.innerHTML = `<span class="chevron ${notesExpanded ? 'open' : ''}">&#9656;</span><span class="tree-title">Notes (${extraNotes.length})</span>`;
+    notesToggle.innerHTML = `<span class="chevron ${notesExpanded ? 'open' : ''}">${treeIcon('chevron')}</span><span class="tree-title">Notes (${extraNotes.length})</span>`;
     notesToggle.addEventListener('click', () => {
       if (state.expandedNoteGroups.has(t.id)) state.expandedNoteGroups.delete(t.id);
       else state.expandedNoteGroups.add(t.id);
