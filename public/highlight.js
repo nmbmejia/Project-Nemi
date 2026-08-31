@@ -112,9 +112,23 @@ function hlMarkJsonKeys(tokens) {
 }
 
 // Returns escaped HTML. Callers must not escape again.
+// Reformat a JSON code block to indented form so minified/compact JSON
+// pasted into a doc still reads as a structure. Falls back to the original
+// text untouched if it doesn't parse (e.g. it's JSON5, has comments, or is
+// actually a fragment), since a highlighter has no business rejecting a
+// code block just because it can't reformat it.
+function hlPrettyJson(code) {
+  try {
+    return JSON.stringify(JSON.parse(code), null, 2);
+  } catch {
+    return code;
+  }
+}
+
 function highlightCode(code, lang) {
   const key = HL_ALIASES[String(lang || '').toLowerCase()];
   if (!key) return hlEscape(code);
+  if (key === 'json') code = hlPrettyJson(code);
   const tokens = hlTokenize(code, hlRules(key));
   if (key === 'json') hlMarkJsonKeys(tokens);
   let out = '';

@@ -637,6 +637,10 @@ body {
 .doc-title, .md-body { animation: docFadeIn 0.18s ease; }
 
 .doc-title { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 24px; line-height: 1.25; color: var(--text); }
+/* Dense prose (inline code refs, long identifiers) reads worse the wider
+   the line; cap measure to a comfortable reading width instead of letting
+   it stretch to the full docpane. */
+.doc-title, .md-body { max-width: 860px; }
 
 .doc-empty { color: var(--text-faint); padding: 60px 0; text-align: center; }
 
@@ -801,23 +805,87 @@ body {
 .md-body { font-size: 15.5px; line-height: 1.7; color: var(--text-dim); }
 .md-body h1 { font-size: 22px; margin: 32px 0 14px; color: var(--text); font-weight: 700; }
 .md-body h1:first-child { margin-top: 0; }
-.md-body h2 { font-size: 18px; margin: 30px 0 12px; color: var(--text); font-weight: 700; padding-top: 20px; border-top: 1px solid var(--border); }
+/* The top border is the section-break signal for h2, so it needs to read
+   as a deliberate divider rather than an incidental hairline (list-item
+   separators, hr) elsewhere in the doc. More top margin gives the break
+   room to breathe; a heavier accent-colored border (vs. the neutral
+   --border used everywhere else) makes it visually distinct as *the*
+   section marker instead of blending with those thinner, muted lines. */
+.md-body h2 { font-size: 18px; margin: 44px 0 12px; color: var(--text); font-weight: 700; padding-top: 22px; border-top: 2px solid var(--accent-soft); }
 .md-body h2:first-child { margin-top: 0; padding-top: 0; border-top: none; }
 .md-body h3 { font-size: 15.5px; margin: 22px 0 8px; color: var(--text); font-weight: 700; }
 .md-body p { margin: 12px 0; }
+/* The lead paragraph right after the title tends to be the doc's metadata/
+   summary line (Date/Branch/Scope/Verdict run-on). Give it its own visual
+   register, slightly smaller and boxed, so it reads as a header strip
+   instead of continuing the body's dense running prose. */
+.md-body > p:first-child {
+  font-size: 14px;
+  line-height: 1.9;
+  padding: 12px 14px;
+  margin: 0 0 20px;
+  background: var(--bg-hover);
+  border-radius: 8px;
+  color: var(--text-dim);
+}
+/* Inside the metadata strip, bold runs are field labels (Date:, Branch:,
+   Scope:, Verdict:), not emphasis on prose. Style them as small caps tags
+   with a hair of letter-spacing so they act as inline pseudo-headers the
+   eye can use to jump straight to "Verdict" without reading the run-on. */
+.md-body > p:first-child strong {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+  margin-right: 2px;
+}
 .md-body strong { font-weight: 700; color: var(--text); }
+/* Bold is the doc's only emphasis signal; when every other word is bold
+   (label:, term, verdict) nothing stands out. Dial back weight slightly and
+   let bold do its job through color+weight together rather than sheer heft. */
+.md-body p strong { font-weight: 650; }
 .md-body ul { padding-left: 22px; margin: 10px 0; }
 .md-body ol { padding-left: 24px; margin: 10px 0; }
 .md-body li { margin: 4px 0; }
-.md-body ol > li { margin: 12px 0; line-height: 1.65; }
-.md-body ol > li::marker { font-weight: 700; color: var(--accent); }
+.md-body ol > li { margin: 16px 0; line-height: 1.65; }
+.md-body ol > li::marker { font-weight: 700; color: var(--accent); font-size: 1.1em; }
 .md-body ul:not(.md-checklist) > li { margin: 12px 0; line-height: 1.65; }
 .md-body ul:not(.md-checklist) > li::marker { color: var(--accent); }
+/* A numbered "surface map" style list nests its own prose + code refs per
+   item; without a visual boundary between items they read as one wall of
+   text. A left accent rail (not just a top hairline) gives each item its
+   own edge to scan down, closer to a card than a run-on paragraph. */
+.md-body ol > li {
+  padding-left: 14px;
+  border-left: 2px solid var(--border);
+}
+.md-body ol > li + li { margin-top: 20px; padding-top: 2px; }
+/* The lead "Label:" bold term in a list item (Entry points:, Transport:,
+   Parsing:...) is functioning as a definition-list term even though
+   markdown has no dt/dd here. Promote just that first bold run to a small
+   pill so it reads as a heading for the item, not more inline bold noise
+   competing with the rest of the sentence. */
+.md-body ol > li > strong:first-child,
+.md-body ul:not(.md-checklist) > li > strong:first-child {
+  display: inline-block;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 1px 8px;
+  border-radius: 5px;
+  font-size: 0.92em;
+  margin-right: 2px;
+}
 /* overflow-wrap: long unbroken tokens (file paths, generated symbol names)
    have no spaces for the browser to break on by default, so a single one
    ends up widening .docpane past the viewport and running under the rail. */
 .md-body code { background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 5px; font-size: 0.87em; font-family: var(--font-mono); overflow-wrap: anywhere; }
 .md-body code.code-path { background: var(--bg-hover); color: var(--text-dim); }
+/* Inline code refs (file:line, symbol names) are dense and numerous inside
+   list prose; at full accent weight they compete with bold for attention.
+   Muting them to a neutral tone keeps bold as the one strong signal and
+   code refs as recessive detail the eye can skip until needed. */
+.md-body li code, .md-body td code { background: var(--bg-hover); color: var(--text-dim); }
 /* Code block = header bar (lang + copy) stacked on the code itself, not an
    overlay on top of it. An overlay sits on top of arbitrary code text and
    any line running underneath reads as a broken, floating chip; a header
@@ -843,7 +911,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: #9a9a9a;
 }
 .md-body pre.code-block {
   background: var(--code-bg);
@@ -854,6 +922,11 @@ body {
   border-radius: 0;
 }
 .md-body pre.code-block code { background: none; color: inherit; padding: 0; font-size: 13px; line-height: 1.6; }
+/* Code chrome (header, button) sits on the always-dark code panel in both
+   themes (see the --code-* comment above), so its colors must NOT come from
+   the theme-swapped --text-dim/--green vars: in light mode those resolve to
+   colors tuned for a light background and go low-contrast/dull against the
+   dark header. Use fixed tones scoped to the code panel instead. */
 .code-copy-btn {
   display: flex;
   align-items: center;
@@ -862,7 +935,7 @@ body {
   border-radius: 6px;
   border: 1px solid transparent;
   background: none;
-  color: var(--text-dim);
+  color: #9a9a9a;
   font-family: var(--font-mono);
   font-size: 11px;
   line-height: 1;
@@ -874,7 +947,7 @@ body {
   color: var(--code-text);
   background: var(--code-copy-bg-hover, rgba(255, 255, 255, 0.1));
 }
-.code-copy-btn.copied { color: var(--green); border-color: currentColor; }
+.code-copy-btn.copied { color: #34c77b; border-color: currentColor; }
 .code-copy-btn svg { flex: none; }
 .md-body blockquote {
   border-left: 3px solid var(--amber);
@@ -885,10 +958,38 @@ body {
   color: var(--text-dim);
   font-size: 14px;
 }
-.md-body hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+/* A bare hairline the same weight as the smaller in-list separators doesn't
+   read as a section break, it just floats. Widen the margin so it has room
+   to breathe and add a short centered accent tick on top of the full-width
+   line so a real "new section" divider is visually distinct from the
+   incidental hairlines used elsewhere (list items, h2 top-border). */
+.md-body hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 40px 0;
+  position: relative;
+}
+.md-body hr::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+/* width: 100% forces the table to fit the pane no matter how many columns
+   it has; with more columns than fit, the browser shrinks each one instead
+   of letting the table grow and the wrapper scroll, which crushes cells
+   until long identifiers wrap one character per line. min-width: 100% lets
+   a narrow table still fill the pane while a wide one grows past it and
+   scrolls horizontally as intended. white-space: nowrap on cells stops
+   individual columns from being squeezed once that happens. */
 .md-body .table-wrap { overflow-x: auto; margin: 14px 0; }
-.md-body table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
-.md-body th, .md-body td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
+.md-body table { border-collapse: collapse; width: max-content; min-width: 100%; font-size: 13.5px; }
+.md-body th, .md-body td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; white-space: nowrap; }
 .md-body th { color: var(--text); font-weight: 700; background: var(--bg-hover); }
 .md-body a { color: var(--accent); text-decoration: none; }
 .md-body a:hover { text-decoration: underline; }
