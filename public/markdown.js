@@ -69,9 +69,9 @@ function parseListLine(line) {
   if (checkbox) {
     return { indent: checkbox[1].length, isCheckbox: true, ordered: false, checked: checkbox[2].toLowerCase() === 'x', text: checkbox[3] };
   }
-  const ordered = line.match(/^(\s*)\d+\.\s+(.*)$/);
+  const ordered = line.match(/^(\s*)(\d+)\.\s+(.*)$/);
   if (ordered) {
-    return { indent: ordered[1].length, isCheckbox: false, ordered: true, checked: false, text: ordered[2] };
+    return { indent: ordered[1].length, isCheckbox: false, ordered: true, number: Number(ordered[2]), checked: false, text: ordered[3] };
   }
   const plain = line.match(/^(\s*)[-*]\s+(.*)$/);
   if (plain) {
@@ -87,7 +87,10 @@ function renderList(items) {
   const levelIndent = items[0].indent;
   const isChecklist = items[0].isCheckbox;
   const tag = items[0].ordered ? 'ol' : 'ul';
-  const out = [isChecklist ? '<ul class="md-checklist">' : `<${tag}>`];
+  // A blockquote or blank line between items splits a numbered list in two, so
+  // each piece has to carry its source number or every piece restarts at 1.
+  const startAttr = items[0].ordered ? ` start="${items[0].number}" style="counter-reset: step ${items[0].number - 1}"` : '';
+  const out = [isChecklist ? '<ul class="md-checklist">' : `<${tag}${startAttr}>`];
   let i = 0;
   while (i < items.length) {
     const item = items[i];

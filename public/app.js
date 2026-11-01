@@ -217,8 +217,6 @@ function matchesActiveLabel(t) {
 // currentColor so they pick up row text color and theme automatically).
 const TREE_ICONS = {
   chevron: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>',
-  folder: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7z"></path></svg>',
-  doc: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"></path><polyline points="15 2 15 7 20 7"></polyline></svg>',
   pin: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5l-2 3z"></path></svg>',
   branch: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>',
 };
@@ -312,7 +310,7 @@ function buildDocsNodeEl(node, project, q, parentPath) {
 function buildFileDocEl(node, project) {
   const btn = document.createElement('button');
   btn.className = 'tree-row tree-doc' + (state.selectedKey === node.fileId ? ' active' : '');
-  btn.innerHTML = `${treeIcon('doc', 'tree-doc-icon')}<span class="tree-title" title="${escapeText(node.name)}">${escapeText(node.name)}</span>`;
+  btn.innerHTML = `<span class="tree-title" title="${escapeText(node.name)}">${escapeText(node.name)}</span>`;
   btn.addEventListener('click', () => selectStandaloneDoc(project.repo, node));
   return btn;
 }
@@ -327,7 +325,7 @@ function buildFolderDocEl(node, project, q, parentPath) {
 
   const header = document.createElement('button');
   header.className = 'tree-row tree-ticket-header';
-  header.innerHTML = `<span class="chevron ${expanded ? 'open' : ''}">${treeIcon('chevron')}</span>${treeIcon('folder', 'tree-folder-icon')}<span class="tree-title" title="${escapeText(node.name)}">${escapeText(node.name)}</span>`;
+  header.innerHTML = `<span class="chevron ${expanded ? 'open' : ''}">${treeIcon('chevron')}</span><span class="tree-title" title="${escapeText(node.name)}">${escapeText(node.name)}</span>`;
   wrap.appendChild(header);
 
   const body = document.createElement('div');
@@ -373,7 +371,6 @@ function buildTicketEl(t, q) {
   if (isCurrentBranch) metaParts.push('Repo is currently on this branch');
   header.innerHTML = `
     <span class="chevron ${expanded ? 'open' : ''}">${treeIcon('chevron')}</span>
-    ${treeIcon('doc', 'tree-doc-icon')}
     <span class="tree-title" title="${escapeText(metaParts.join(' • '))}">${escapeText(ticketLabel)}</span>
     <span class="tree-status-dot ${t.status}" title="${STATUS_LABEL[t.status]}"></span>
     <button type="button" class="tree-pin-btn${t.pinned ? ' pinned' : ''}" title="${t.pinned ? 'Unpin' : 'Pin to top'}">${treeIcon('pin')}</button>
@@ -399,7 +396,7 @@ function buildTicketEl(t, q) {
   const buildDocBtn = (d) => {
     const btn = document.createElement('button');
     btn.className = 'tree-row tree-doc' + (state.selectedKey === d.key ? ' active' : '');
-    btn.innerHTML = `${treeIcon('doc', 'tree-doc-icon')}<span class="tree-title" title="${escapeText(d.name)}">${escapeText(d.name)}</span>`;
+    btn.innerHTML = `<span class="tree-title" title="${escapeText(d.name)}">${escapeText(d.name)}</span>`;
     btn.addEventListener('click', () => selectDoc(t.id, d.key));
     return btn;
   };
@@ -621,6 +618,8 @@ function groupCompletedTasks(ul, groupKey) {
 
 // ---------- Right rail ----------
 
+const TOC_ACTIVE_OFFSET = 16;
+
 const COPY_ICON_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
 
 // Fills el with fullText, wrapped up to maxLines. If that overflows, cuts
@@ -651,11 +650,49 @@ function truncateFront(el, fullText, maxLines) {
   el.textContent = '…' + fullText.slice(fullText.length - best);
 }
 
+// "On this page": built from the rendered doc, so it must run after renderDoc.
+function docHeadings() {
+  return document.querySelectorAll('#docBody h2, #docBody h3');
+}
+
+function tocHtml() {
+  const links = Array.from(docHeadings()).map((h, i) => {
+    const sub = h.tagName === 'H3' ? ' toc-sub' : '';
+    return `<button type="button" class="toc-link${sub}" data-toc-index="${i}">${escapeText(h.textContent)}</button>`;
+  });
+  if (!links.length) return '';
+  return `<nav class="toc"><div class="toc-title">On this page</div>${links.join('')}</nav>`;
+}
+
+function syncTocActive() {
+  const links = document.querySelectorAll('.toc-link');
+  if (!links.length) return;
+  const topbarHeight = document.querySelector('.topbar').offsetHeight;
+  let active = 0;
+  docHeadings().forEach((h, i) => {
+    if (h.getBoundingClientRect().top <= topbarHeight + TOC_ACTIVE_OFFSET) active = i;
+  });
+  links.forEach((link, i) => link.classList.toggle('active', i === active));
+}
+
+window.addEventListener('scroll', syncTocActive, { passive: true });
+
+// Delegated because renderRail replaces the rail's innerHTML on every render.
+document.getElementById('rail').addEventListener('click', (e) => {
+  const link = e.target.closest('.toc-link');
+  if (!link) return;
+  const heading = docHeadings()[Number(link.dataset.tocIndex)];
+  if (!heading) return;
+  const top = heading.getBoundingClientRect().top + window.scrollY - document.querySelector('.topbar').offsetHeight - TOC_ACTIVE_OFFSET + 1;
+  window.scrollTo({ top, behavior: 'smooth' });
+});
+
 function renderRail() {
   const rail = document.getElementById('rail');
   const t = state.tickets.find((x) => x.id === state.selectedTicketId);
   if (!t) {
-    rail.innerHTML = '';
+    rail.innerHTML = tocHtml();
+    syncTocActive();
     return;
   }
   const docs = ticketDocs(t);
@@ -673,6 +710,7 @@ function renderRail() {
   const fullPath = state.root ? `${state.root}/${doc.key}` : doc.key;
 
   rail.innerHTML = `
+    ${tocHtml()}
     <div class="rail-box-dark">
       <div class="rail-box-label">Branch</div>
       <div class="rail-box-value">${escapeText(t.branch)}</div>
@@ -713,6 +751,8 @@ function renderRail() {
       <div id="labelSelectWrap"></div>
     </div>
   `;
+
+  syncTocActive();
 
   const filePathEl = document.getElementById('railFilePath');
   if (filePathEl) truncateFront(filePathEl, fullPath, 3);
@@ -2494,7 +2534,7 @@ function effectiveTheme() {
 }
 
 function applyThemeIcon() {
-  themeToggleBtn.textContent = effectiveTheme() === 'dark' ? '☀️' : '\u{1F319}';
+  themeToggleBtn.textContent = effectiveTheme() === 'dark' ? '\u2600\uFE0E' : '\u263E';
 }
 
 const themeToggleBtn = document.getElementById('themeToggleBtn');
@@ -2574,6 +2614,15 @@ async function fetchTickets() {
 
   renderAll();
 }
+
+document.addEventListener('keydown', (e) => {
+  // Note editors already use this combo to insert a link.
+  if (e.target.closest('textarea, [contenteditable="true"]')) return;
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+  }
+});
 
 document.getElementById('searchInput').addEventListener('input', (e) => {
   state.search = e.target.value;

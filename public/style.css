@@ -1,32 +1,36 @@
 :root {
-  --bg: #f2f2f2;
-  --bg-elev: #f2f2f2;
-  --bg-card: #fafafa;
-  --bg-hover: #e6e6e6;
-  --bg-active: #ececff;
-  --border: #d3d3d3;
-  --text: #262626;
-  --text-dim: #595959;
-  --text-faint: #8c8c8c;
-  --accent: #635bff;
-  --accent-hover: #4b44d6;
-  --accent-soft: rgba(99, 91, 255, 0.09);
+  --bg: #ffffff;
+  --bg-elev: #ffffff;
+  --bg-card: #f9fafb;
+  --bg-hover: #f3f4f6;
+  --bg-active: rgba(61, 80, 245, 0.09);
+  --border: #e5e7eb;
+  --text: #111827;
+  --text-dim: #374151;
+  --text-faint: #6b7280;
+  --accent: #3d50f5;
+  --accent-hover: #0f1c8a;
+  --accent-soft: rgba(61, 80, 245, 0.09);
   --green: #2e8555;
   --green-soft: rgba(46, 133, 85, 0.12);
   --amber: #f59e0b;
   --amber-soft: rgba(245, 158, 11, 0.14);
-  --callout-bg: rgba(245, 158, 11, 0.14);
+  --callout-bg: #eef1ff;
+  --callout-line: #cfd4fc;
+  --callout-text: #0f1c8a;
   --red: #d1373f;
   --red-soft: rgba(209, 55, 63, 0.12);
-  --dark-box: #262626;
+  --dark-box: #111827;
   --dark-box-text: #f0f0f0;
-  --code-bg: #262626;
+  --code-bg: #0d1117;
   --code-text: #f0f0f0;
-  --code-header-bg: #2f2f2f;
+  --code-header-bg: #0d1117;
   --radius: 8px;
   --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-heading: "General Sans", var(--font-sans);
+  --code-line: #2c3442;
 
   /* Spacing and type scale. New work should use these instead of literals;
      the older sections above still carry their original hardcoded values. */
@@ -86,36 +90,37 @@
   --syn-punct: #b6bdc7;
 
   font-family: var(--font-sans);
-  font-feature-settings: "cv11", "ss01", "cv01";
   -webkit-font-smoothing: antialiased;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0a0a0a;
-    --bg-elev: #0a0a0a;
-    --bg-card: #141414;
-    --bg-hover: #1f1f1f;
-    --bg-active: rgba(139, 131, 255, 0.14);
-    --border: #3a3a3a;
-    --text: #eaeaea;
-    --text-dim: #b0b0b0;
-    --text-faint: #808080;
-    --accent: #8b83ff;
-    --accent-hover: #a49dff;
-    --accent-soft: rgba(139, 131, 255, 0.16);
+    --bg: #0d1117;
+    --bg-elev: #0d1117;
+    --bg-card: #161c26;
+    --bg-hover: #1c2330;
+    --bg-active: rgba(51, 105, 255, 0.16);
+    --border: #2c3442;
+    --text: #f3f4f6;
+    --text-dim: #d1d5db;
+    --text-faint: #9ca3af;
+    --accent: #3369ff;
+    --accent-hover: #b3c7ff;
+    --accent-soft: rgba(51, 105, 255, 0.16);
     --green: #34c77b;
     --green-soft: rgba(52, 199, 123, 0.16);
     --amber: #fbbf24;
     --amber-soft: rgba(251, 191, 36, 0.16);
-    --callout-bg: rgba(251, 191, 36, 0.07);
+    --callout-bg: #17264f;
+    --callout-line: #2b43a0;
+    --callout-text: #dbe4ff;
     --red: #ef5a63;
     --red-soft: rgba(239, 90, 99, 0.16);
-    --dark-box: #202020;
-    --dark-box-text: #eaeaea;
-    --code-bg: #141414;
-    --code-text: #eaeaea;
-    --code-header-bg: #1c1c1c;
+    --dark-box: #161c26;
+    --dark-box-text: #f3f4f6;
+    --code-bg: #161c26;
+    --code-text: #f3f4f6;
+    --code-header-bg: #161c26;
     --shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 
     /* Dimmed paper with light ink. The light-mode pastels are far too bright
@@ -138,30 +143,32 @@
 }
 
 :root[data-theme="dark"] {
-  --bg: #0a0a0a;
-  --bg-elev: #0a0a0a;
-  --bg-card: #141414;
-  --bg-hover: #1f1f1f;
-  --bg-active: rgba(139, 131, 255, 0.14);
-  --border: #3a3a3a;
-  --text: #eaeaea;
-  --text-dim: #b0b0b0;
-  --text-faint: #808080;
-  --accent: #8b83ff;
-  --accent-hover: #a49dff;
-  --accent-soft: rgba(139, 131, 255, 0.16);
+  --bg: #0d1117;
+  --bg-elev: #0d1117;
+  --bg-card: #161c26;
+  --bg-hover: #1c2330;
+  --bg-active: rgba(51, 105, 255, 0.16);
+  --border: #2c3442;
+  --text: #f3f4f6;
+  --text-dim: #d1d5db;
+  --text-faint: #9ca3af;
+  --accent: #3369ff;
+  --accent-hover: #b3c7ff;
+  --accent-soft: rgba(51, 105, 255, 0.16);
   --green: #34c77b;
   --green-soft: rgba(52, 199, 123, 0.16);
   --amber: #fbbf24;
   --amber-soft: rgba(251, 191, 36, 0.16);
-  --callout-bg: rgba(251, 191, 36, 0.07);
+  --callout-bg: #17264f;
+  --callout-line: #2b43a0;
+  --callout-text: #dbe4ff;
   --red: #ef5a63;
   --red-soft: rgba(239, 90, 99, 0.16);
-  --dark-box: #202020;
-  --dark-box-text: #eaeaea;
-  --code-bg: #141414;
-  --code-text: #eaeaea;
-  --code-header-bg: #1c1c1c;
+  --dark-box: #161c26;
+  --dark-box-text: #f3f4f6;
+  --code-bg: #161c26;
+  --code-text: #f3f4f6;
+  --code-header-bg: #161c26;
   --shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 
   --paper-yellow: #4a431f; --edge-yellow: #5a5127; --ink-yellow: #f2e7b8;
@@ -194,64 +201,65 @@ body {
 .topbar {
   display: flex;
   align-items: center;
-  gap: 24px;
-  padding: 0 24px;
+  gap: 16px;
+  padding: 0 16px;
   height: 56px;
   background: var(--bg-elev);
+  border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 20;
 }
 
-.topbar-left { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.brand { font-size: 19px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
-.brand-accent { color: var(--accent); }
+.topbar-left { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-right: auto; }
+.brand { font-family: var(--font-heading); font-size: 18px; font-weight: 600; color: var(--text); }
 
 .topbar-search {
   display: flex;
   align-items: center;
   gap: 8px;
-  width: 260px;
+  flex: 0 1 288px;
+  min-width: 0;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 7px 12px;
+  padding: 8px 12px;
 }
-.topbar-search .search-icon { color: var(--text-faint); font-size: 13px; }
+.search-kbd { flex-shrink: 0; font: inherit; font-size: 12px; line-height: 16px; color: var(--text-faint); background: var(--bg-card); border-radius: 4px; padding: 0 8px; }
 .topbar-search input {
   flex: 1;
   border: none;
   outline: none;
   background: none;
-  font-size: 13.5px;
+  min-width: 0;
+  font-size: 14px;
   color: var(--text);
 }
 .topbar-search input::placeholder { color: var(--text-faint); }
 
-.topbar-right { display: flex; align-items: center; gap: 22px; margin-left: auto; flex-shrink: 0; }
+.topbar-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
 .topnav-link {
   font-size: 14px;
-  font-weight: 600;
-  color: var(--accent);
+  color: var(--text-faint);
   text-decoration: none;
   cursor: pointer;
 }
-.topnav-link:hover { color: var(--accent-hover); }
+.topnav-link:hover { color: var(--text); }
 
-.view-switch { display: flex; align-items: center; gap: 2px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 3px; }
+.view-switch { display: flex; align-items: center; gap: 4px; }
 .view-switch-btn {
   font: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
-  padding: 5px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 4px 12px;
   border: none;
   border-radius: 6px;
   background: none;
-  color: var(--text-dim);
+  color: var(--text-faint);
   cursor: pointer;
 }
 .view-switch-btn:hover { color: var(--text); }
-.view-switch-btn.active { background: var(--accent); color: #fff; }
+.view-switch-btn.active, .view-switch-btn.active:hover { background: var(--text); color: var(--bg); }
 
 .theme-toggle-btn {
   display: flex;
@@ -259,11 +267,11 @@ body {
   justify-content: center;
   width: 32px;
   height: 32px;
-  font-size: 15px;
-  border: 1px solid var(--border);
+  font-size: 16px;
+  border: none;
   border-radius: 8px;
-  background: var(--bg);
-  color: var(--text-dim);
+  background: none;
+  color: var(--text-faint);
   cursor: pointer;
   line-height: 1;
 }
@@ -271,13 +279,12 @@ body {
 
 .label-filter-select {
   font: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
-  padding: 6px 10px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--text-dim);
+  font-size: 14px;
+  padding: 4px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-faint);
   cursor: pointer;
 }
 
@@ -285,17 +292,16 @@ body {
 
 .label-manage-btn {
   font: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
-  padding: 6px 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--text-dim);
+  font-size: 14px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-faint);
   cursor: pointer;
 }
 .label-manage-btn:hover { color: var(--text); }
-.label-manage-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.label-manage-btn.active { background: var(--accent-soft); color: var(--text); }
 
 .label-manage-panel {
   position: absolute;
@@ -382,17 +388,16 @@ body {
 
 .hide-done-btn {
   font: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
-  padding: 6px 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--text-dim);
+  font-size: 14px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-faint);
   cursor: pointer;
 }
 .hide-done-btn:hover { color: var(--text); }
-.hide-done-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.hide-done-btn.active { background: var(--accent-soft); color: var(--text); }
 
 .project-count-badge {
   flex-shrink: 0;
@@ -421,8 +426,6 @@ body {
 .layout {
   display: flex;
   align-items: flex-start;
-  max-width: 1600px;
-  margin: 0 auto;
 }
 .layout[hidden] { display: none; }
 
@@ -433,7 +436,7 @@ body {
   position: sticky;
   top: 56px;
   overflow-y: auto;
-  padding: 22px 16px 40px;
+  padding: 16px 16px 40px;
 }
 
 .sidebar-resizer {
@@ -450,7 +453,7 @@ body {
   bottom: 0;
   left: 2px;
   width: 1px;
-  background: transparent;
+  background: var(--border);
   transition: background 0.12s;
 }
 .sidebar-resizer:hover::after,
@@ -463,7 +466,7 @@ body {
 .docpane {
   flex: 1;
   min-width: 0;
-  padding: 44px 48px 80px;
+  padding: 32px 48px 80px;
 }
 
 .rail {
@@ -473,7 +476,8 @@ body {
   position: sticky;
   top: 56px;
   overflow-y: auto;
-  padding: 44px 24px 40px;
+  padding: 16px 24px 40px;
+  border-left: 1px solid var(--border);
 }
 
 @media (max-width: 1150px) {
@@ -490,21 +494,21 @@ body {
 
 .tree-empty { padding: 20px 14px; color: var(--text-faint); font-size: 13px; text-align: center; }
 
-/* Shared row template: chevron/icon is always the first child, at a fixed
-   position, on every row that has one, so the "this expands" affordance
-   never shifts between tree levels. Compact single-line rows throughout. */
+/* Shared row template: the chevron always sits at the row's right edge, so the
+   "this expands" affordance never shifts between tree levels. Compact
+   single-line rows throughout. */
 .tree-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   background: none;
   border: none;
   text-align: left;
-  padding: 8px 10px;
-  border-radius: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
   cursor: pointer;
-  line-height: 1.3;
+  line-height: 20px;
   color: var(--text-dim);
   font-family: inherit;
   font-size: 14px;
@@ -531,6 +535,7 @@ body {
   align-items: center;
   justify-content: center;
 }
+.tree-row > .chevron { order: 1; }
 .chevron.open { transform: rotate(90deg); }
 
 .tree-icon {
@@ -544,29 +549,29 @@ body {
 }
 
 /* ---- Level 1: Project ---- */
-.tree-project { margin-top: 14px; }
+.tree-project { margin-top: 12px; }
 .tree-project:first-child { margin-top: 0; }
 .tree-project > .tree-row {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
   color: var(--text);
 }
 
-/* Indent for a project's children (tickets); padding-only, no guide line. */
+/* Indent for a project's children (tickets), with a guide line. */
 .tree-project-body {
   display: grid;
   grid-template-rows: 0fr;
-  margin-left: 22px;
+  margin-left: 8px;
   transition: grid-template-rows 0.2s ease, margin 0.2s ease;
 }
 .tree-project-body.expanded { grid-template-rows: 1fr; margin-top: 2px; }
-.tree-project-body-inner { overflow: hidden; min-height: 0; }
+.tree-project-body-inner { overflow: hidden; min-height: 0; border-left: 1px solid var(--border); padding-left: 8px; }
 
 /* ---- Level 2: Ticket / folder ---- */
 .tree-ticket-header {
   font-size: 14px;
-  font-weight: 500;
-  color: var(--text);
+  color: var(--text-dim);
 }
 
 .tree-pin-btn {
@@ -598,35 +603,30 @@ body {
 .tree-status-dot.in-progress { background: var(--amber); }
 .tree-status-dot.done { background: var(--green); }
 
-/* Indent for a ticket's children (docs); padding-only, no guide line. */
+/* Indent for a ticket's children (docs), with a guide line. */
 .tree-ticket-body {
   display: grid;
   grid-template-rows: 0fr;
-  margin-left: 22px;
+  margin-left: 8px;
   transition: grid-template-rows 0.2s ease, margin 0.2s ease;
 }
 .tree-ticket-body.expanded { grid-template-rows: 1fr; margin-top: 2px; }
-.tree-ticket-body-inner { overflow: hidden; min-height: 0; }
+.tree-ticket-body-inner { overflow: hidden; min-height: 0; border-left: 1px solid var(--border); padding-left: 8px; }
 
 /* ---- Level 3: Doc (leaf) ---- */
-.tree-doc-icon { color: var(--text-faint); }
 .tree-doc {
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 400;
   color: var(--text-dim);
 }
 .tree-doc.active {
-  background: var(--bg-active);
-  color: var(--accent);
-  font-weight: 600;
-  box-shadow: inset 2px 0 0 var(--accent);
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 500;
 }
-.tree-doc.active .tree-doc-icon { color: var(--accent); }
 
 .tree-notes-toggle { color: var(--text-faint); font-size: 12px; font-weight: 600; }
 .tree-notes-toggle .chevron { width: 12px; height: 12px; }
-
-.tree-folder-icon { color: var(--text-faint); opacity: 0.85; }
 
 /* ---------- Doc pane ---------- */
 
@@ -636,15 +636,33 @@ body {
 }
 .doc-title, .md-body { animation: docFadeIn 0.18s ease; }
 
-.doc-title { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 24px; line-height: 1.25; color: var(--text); }
+.doc-title { font-family: var(--font-heading); font-size: 29px; font-weight: 600; margin-block: 0 24px; line-height: 1.2; color: var(--text); }
 /* Dense prose (inline code refs, long identifiers) reads worse the wider
    the line; cap measure to a comfortable reading width instead of letting
    it stretch to the full docpane. */
-.doc-title, .md-body { max-width: 860px; }
+.doc-title, .md-body { max-width: 800px; margin-inline: auto; }
 
 .doc-empty { color: var(--text-faint); padding: 60px 0; text-align: center; }
 
 /* ---------- Right rail ---------- */
+
+.toc { margin-bottom: 24px; }
+.toc-title { font-family: var(--font-heading); font-size: 16px; font-weight: 600; line-height: 1.2; color: var(--text); margin: 0 0 8px; }
+.toc-link {
+  display: block;
+  width: 100%;
+  padding: 4px 8px;
+  border: none;
+  background: none;
+  text-align: left;
+  font: inherit;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--text-faint);
+  cursor: pointer;
+}
+.toc-link.toc-sub { padding-left: 16px; }
+.toc-link:hover, .toc-link.active { color: var(--text); }
 
 .rail-section { margin-bottom: 28px; }
 .rail h3 {
@@ -657,9 +675,10 @@ body {
 .rail-box-dark {
   background: var(--dark-box);
   color: var(--dark-box-text);
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 22px;
+  margin-bottom: 16px;
 }
 .rail-box-dark .rail-box-label {
   font-size: 11px;
@@ -703,9 +722,9 @@ body {
 
 .rail-box-light {
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 14px 16px;
-  margin-bottom: 22px;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
 }
 .rail-box-light .rail-box-title {
   font-size: 11px;
@@ -802,97 +821,81 @@ body {
 
 /* ---------- Markdown body ---------- */
 
-.md-body { font-size: 15.5px; line-height: 1.7; color: var(--text-dim); }
-.md-body h1 { font-size: 22px; margin: 32px 0 14px; color: var(--text); font-weight: 700; }
-.md-body h1:first-child { margin-top: 0; }
-/* The top border is the section-break signal for h2, so it needs to read
-   as a deliberate divider rather than an incidental hairline (list-item
-   separators, hr) elsewhere in the doc. More top margin gives the break
-   room to breathe; a heavier accent-colored border (vs. the neutral
-   --border used everywhere else) makes it visually distinct as *the*
-   section marker instead of blending with those thinner, muted lines. */
-.md-body h2 { font-size: 18px; margin: 44px 0 12px; color: var(--text); font-weight: 700; padding-top: 22px; border-top: 2px solid var(--accent-soft); }
-.md-body h2:first-child { margin-top: 0; padding-top: 0; border-top: none; }
-.md-body h3 { font-size: 15.5px; margin: 22px 0 8px; color: var(--text); font-weight: 700; }
-.md-body p { margin: 12px 0; }
-/* The lead paragraph right after the title tends to be the doc's metadata/
-   summary line (Date/Branch/Scope/Verdict run-on). Give it its own visual
-   register, slightly smaller and boxed, so it reads as a header strip
-   instead of continuing the body's dense running prose. */
-.md-body > p:first-child {
-  font-size: 14px;
-  line-height: 1.9;
-  padding: 12px 14px;
-  margin: 0 0 20px;
-  background: var(--bg-hover);
-  border-radius: 8px;
+.md-body {
+  --step-size: 28px;
+  --step-gap: 16px;
+  font-size: 16px;
+  line-height: 1.75;
   color: var(--text-dim);
 }
-/* Inside the metadata strip, bold runs are field labels (Date:, Branch:,
-   Scope:, Verdict:), not emphasis on prose. Style them as small caps tags
-   with a hair of letter-spacing so they act as inline pseudo-headers the
-   eye can use to jump straight to "Verdict" without reading the run-on. */
-.md-body > p:first-child strong {
-  font-size: 11px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--accent);
-  font-weight: 700;
-  margin-right: 2px;
-}
-.md-body strong { font-weight: 700; color: var(--text); }
-/* Bold is the doc's only emphasis signal; when every other word is bold
-   (label:, term, verdict) nothing stands out. Dial back weight slightly and
-   let bold do its job through color+weight together rather than sheer heft. */
-.md-body p strong { font-weight: 650; }
-.md-body ul { padding-left: 22px; margin: 10px 0; }
-.md-body ol { padding-left: 24px; margin: 10px 0; }
+.md-body h1, .md-body h2, .md-body h3 { font-family: var(--font-heading); font-weight: 600; line-height: 1.2; color: var(--text); }
+.md-body h1, .md-body h2 { font-size: 24px; margin: 32px 0 20px; }
+.md-body h3 { font-size: 18px; margin: 24px 0 12px; }
+.md-body h1:first-child, .md-body h2:first-child { margin-top: 0; }
+.md-body p { margin: 0 0 16px; }
+/* The lead paragraph right after the title tends to be the doc's metadata/
+   summary line (Date/Branch/Scope/Verdict run-on), so it reads as a quiet
+   caption under the title rather than as body prose. */
+.md-body > p:first-child { font-size: 14px; color: var(--text-faint); }
+.md-body strong { font-weight: 600; color: var(--text); }
+.md-body ul { list-style: disc; padding-left: 20px; margin: 8px 0 16px; }
+.md-body ol { padding-left: 24px; margin: 8px 0 16px; }
 .md-body li { margin: 4px 0; }
-.md-body ol > li { margin: 16px 0; line-height: 1.65; }
-.md-body ol > li::marker { font-weight: 700; color: var(--accent); font-size: 1.1em; }
-.md-body ul:not(.md-checklist) > li { margin: 12px 0; line-height: 1.65; }
-.md-body ul:not(.md-checklist) > li::marker { color: var(--accent); }
-/* A numbered "surface map" style list nests its own prose + code refs per
-   item; without a visual boundary between items they read as one wall of
-   text. A left accent rail (not just a top hairline) gives each item its
-   own edge to scan down, closer to a card than a run-on paragraph. */
-.md-body ol > li {
-  padding-left: 14px;
-  border-left: 2px solid var(--border);
+.md-body li > ul, .md-body li > ol { margin: 4px 0 0; }
+.md-body ul:not(.md-checklist) > li::marker { color: var(--text-faint); }
+/* Top-level numbered lists read as a connected steps timeline. The counter
+   starts from the inline counter-reset renderList writes, because a list split
+   up by a blockquote or blank line still has to keep its source numbering. */
+.md-body > ol { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+.md-body > ol > li {
+  counter-increment: step;
+  position: relative;
+  min-height: var(--step-size);
+  margin: 0;
+  padding: 0 0 20px calc(var(--step-size) + var(--step-gap));
 }
-.md-body ol > li + li { margin-top: 20px; padding-top: 2px; }
-/* The lead "Label:" bold term in a list item (Entry points:, Transport:,
-   Parsing:...) is functioning as a definition-list term even though
-   markdown has no dt/dd here. Promote just that first bold run to a small
-   pill so it reads as a heading for the item, not more inline bold noise
-   competing with the rest of the sentence. */
-.md-body ol > li > strong:first-child,
-.md-body ul:not(.md-checklist) > li > strong:first-child {
-  display: inline-block;
-  background: var(--accent-soft);
-  color: var(--accent);
-  padding: 1px 8px;
-  border-radius: 5px;
-  font-size: 0.92em;
-  margin-right: 2px;
+.md-body > ol > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--step-size);
+  height: var(--step-size);
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
 }
+.md-body > ol > li::after {
+  content: '';
+  position: absolute;
+  left: calc(var(--step-size) / 2);
+  top: calc(var(--step-size) + 4px);
+  bottom: 4px;
+  width: 1px;
+  background: var(--border);
+}
+/* Content written straight after a step (its comment, its code) belongs to that
+   step, so it lines up with the step's text instead of the page margin. */
+.md-body > ol + blockquote,
+.md-body > ol + ul:not(.md-checklist),
+.md-body > ol + .code-block-wrap { margin-left: calc(var(--step-size) + var(--step-gap)); margin-top: 0; margin-bottom: 20px; }
 /* overflow-wrap: long unbroken tokens (file paths, generated symbol names)
    have no spaces for the browser to break on by default, so a single one
    ends up widening .docpane past the viewport and running under the rail. */
-.md-body code { background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 5px; font-size: 0.87em; font-family: var(--font-mono); overflow-wrap: anywhere; }
-.md-body code.code-path { background: var(--bg-hover); color: var(--text-dim); }
-/* Inline code refs (file:line, symbol names) are dense and numerous inside
-   list prose; at full accent weight they compete with bold for attention.
-   Muting them to a neutral tone keeps bold as the one strong signal and
-   code refs as recessive detail the eye can skip until needed. */
-.md-body li code, .md-body td code { background: var(--bg-hover); color: var(--text-dim); }
+.md-body code { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-dim); padding: 2px 6px; border-radius: 4px; font-size: 13px; font-family: var(--font-mono); overflow-wrap: anywhere; }
 /* Code block = header bar (lang + copy) stacked on the code itself, not an
    overlay on top of it. An overlay sits on top of arbitrary code text and
    any line running underneath reads as a broken, floating chip; a header
    bar has its own row, so nothing is ever behind it. */
 .code-block-wrap {
   margin: 16px 0;
-  border-radius: 10px;
+  border: 1px solid var(--code-line);
+  border-radius: 8px;
   overflow: hidden;
   background: var(--code-bg);
 }
@@ -901,27 +904,25 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 7px 8px 7px 14px;
+  padding: 4px 8px 4px 16px;
   background: var(--code-header-bg);
-  border-bottom: 1px solid var(--code-panel-edge);
+  border-bottom: 1px solid var(--code-line);
 }
 .code-block-lang {
   font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #9a9a9a;
+  font-size: 13px;
+  font-weight: 500;
+  color: #9ca3af;
 }
 .md-body pre.code-block {
   background: var(--code-bg);
   color: var(--code-text);
-  padding: 16px 18px;
+  padding: 12px 16px;
   overflow-x: auto;
   margin: 0;
   border-radius: 0;
 }
-.md-body pre.code-block code { background: none; color: inherit; padding: 0; font-size: 13px; line-height: 1.6; }
+.md-body pre.code-block code { background: none; border: none; color: inherit; padding: 0; font-size: 14px; line-height: 1.6; }
 /* Code chrome (header, button) sits on the always-dark code panel in both
    themes (see the --code-* comment above), so its colors must NOT come from
    the theme-swapped --text-dim/--green vars: in light mode those resolve to
@@ -950,36 +951,15 @@ body {
 .code-copy-btn.copied { color: #34c77b; border-color: currentColor; }
 .code-copy-btn svg { flex: none; }
 .md-body blockquote {
-  border-left: 3px solid var(--amber);
+  border: 1px solid var(--callout-line);
   background: var(--callout-bg);
-  margin: 14px 0;
-  padding: 10px 14px;
-  border-radius: 0 6px 6px 0;
-  color: var(--text-dim);
-  font-size: 14px;
+  margin: 16px 0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: var(--callout-text);
 }
-/* A bare hairline the same weight as the smaller in-list separators doesn't
-   read as a section break, it just floats. Widen the margin so it has room
-   to breathe and add a short centered accent tick on top of the full-width
-   line so a real "new section" divider is visually distinct from the
-   incidental hairlines used elsewhere (list items, h2 top-border). */
-.md-body hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 40px 0;
-  position: relative;
-}
-.md-body hr::after {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 48px;
-  height: 3px;
-  border-radius: 2px;
-  background: var(--accent);
-}
+.md-body blockquote code { background: none; border-color: var(--callout-line); color: inherit; }
+.md-body hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
 /* width: 100% forces the table to fit the pane no matter how many columns
    it has; with more columns than fit, the browser shrinks each one instead
    of letting the table grow and the wrapper scroll, which crushes cells
@@ -988,9 +968,9 @@ body {
    scrolls horizontally as intended. white-space: nowrap on cells stops
    individual columns from being squeezed once that happens. */
 .md-body .table-wrap { overflow-x: auto; margin: 14px 0; }
-.md-body table { border-collapse: collapse; width: max-content; min-width: 100%; font-size: 13.5px; }
+.md-body table { border-collapse: collapse; width: max-content; min-width: 100%; font-size: 14px; }
 .md-body th, .md-body td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; white-space: nowrap; }
-.md-body th { color: var(--text); font-weight: 700; background: var(--bg-hover); }
+.md-body th { color: var(--text); font-weight: 600; background: var(--bg-card); }
 .md-body a { color: var(--accent); text-decoration: none; }
 .md-body a:hover { text-decoration: underline; }
 
