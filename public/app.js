@@ -271,7 +271,7 @@ function buildProjectEl(project, nodes, q) {
     (t) => t.repo === project.repo && t.status !== 'done' && matchesActiveLabel(t)
   ).length;
   const countBadge = openCount ? `<span class="project-count-badge">${openCount} open</span>` : '';
-  header.innerHTML = `<span class="chevron ${expanded ? 'open' : ''}">${treeIcon('chevron')}</span><span class="tree-title" title="${escapeText(projectLabel)}">${escapeText(projectLabel)}</span>${countBadge}`;
+  header.innerHTML = `<span class="chevron ${expanded ? 'open' : ''}">${treeIcon('chevron')}</span><span class="tree-title" title="${escapeAttr(projectLabel)}">${escapeText(projectLabel)}</span>${countBadge}`;
   wrap.appendChild(header);
 
   const body = document.createElement('div');
@@ -310,7 +310,7 @@ function buildDocsNodeEl(node, project, q, parentPath) {
 function buildFileDocEl(node, project) {
   const btn = document.createElement('button');
   btn.className = 'tree-row tree-doc' + (state.selectedKey === node.fileId ? ' active' : '');
-  btn.innerHTML = `<span class="tree-title" title="${escapeText(node.name)}">${escapeText(node.name)}</span>`;
+  btn.innerHTML = `<span class="tree-title" title="${escapeAttr(node.name)}">${escapeText(node.name)}</span>`;
   btn.addEventListener('click', () => selectStandaloneDoc(project.repo, node));
   return btn;
 }
@@ -325,7 +325,7 @@ function buildFolderDocEl(node, project, q, parentPath) {
 
   const header = document.createElement('button');
   header.className = 'tree-row tree-ticket-header';
-  header.innerHTML = `<span class="chevron ${expanded ? 'open' : ''}">${treeIcon('chevron')}</span><span class="tree-title" title="${escapeText(node.name)}">${escapeText(node.name)}</span>`;
+  header.innerHTML = `<span class="chevron ${expanded ? 'open' : ''}">${treeIcon('chevron')}</span><span class="tree-title" title="${escapeAttr(node.name)}">${escapeText(node.name)}</span>`;
   wrap.appendChild(header);
 
   const body = document.createElement('div');
@@ -371,7 +371,7 @@ function buildTicketEl(t, q) {
   if (isCurrentBranch) metaParts.push('Repo is currently on this branch');
   header.innerHTML = `
     <span class="chevron ${expanded ? 'open' : ''}">${treeIcon('chevron')}</span>
-    <span class="tree-title" title="${escapeText(metaParts.join(' • '))}">${escapeText(ticketLabel)}</span>
+    <span class="tree-title" title="${escapeAttr(metaParts.join(' • '))}">${escapeText(ticketLabel)}</span>
     <span class="tree-status-dot ${t.status}" title="${STATUS_LABEL[t.status]}"></span>
     <button type="button" class="tree-pin-btn${t.pinned ? ' pinned' : ''}" title="${t.pinned ? 'Unpin' : 'Pin to top'}">${treeIcon('pin')}</button>
   `;
@@ -396,7 +396,7 @@ function buildTicketEl(t, q) {
   const buildDocBtn = (d) => {
     const btn = document.createElement('button');
     btn.className = 'tree-row tree-doc' + (state.selectedKey === d.key ? ' active' : '');
-    btn.innerHTML = `<span class="tree-title" title="${escapeText(d.name)}">${escapeText(d.name)}</span>`;
+    btn.innerHTML = `<span class="tree-title" title="${escapeAttr(d.name)}">${escapeText(d.name)}</span>`;
     btn.addEventListener('click', () => selectDoc(t.id, d.key));
     return btn;
   };
