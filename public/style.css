@@ -515,14 +515,12 @@ body {
 }
 .tree-row:hover { background: var(--bg-hover); color: var(--text); }
 
-/* Shared truncating title, used by project/ticket/doc rows alike. min-width:0
-   is required inside a flex row or text-overflow:ellipsis silently no-ops. */
+/* Shared wrapping title, used by project/ticket/doc rows alike. min-width:0
+   is required inside a flex row or long unbroken names overflow it. */
 .tree-title {
   flex: 1;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .chevron {

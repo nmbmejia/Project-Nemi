@@ -75,6 +75,44 @@ function prettyName(s) {
     .join(' ');
 }
 
+// Sidebar display names only: the real name stays in the row's tooltip, in
+// search, and in every key and path.
+const SLUG_ACRONYMS = new Set(['api', 'ui', 'ux', 'pr', 'url', 'sdk', 'gps']);
+const PR_TYPE_PREFIX = /^(?:feature|feat|bugfix|hotfix|fix|refactor|chore|docs|style|test|ci|perf)[-_]/i;
+
+function slugToTopic(slug) {
+  return slug
+    .split(/[-_]+/)
+    .filter(Boolean)
+    .map((w, i) => {
+      if (SLUG_ACRONYMS.has(w.toLowerCase())) return w.toUpperCase();
+      return i === 0 ? w.charAt(0).toUpperCase() + w.slice(1) : w;
+    })
+    .join(' ');
+}
+
+function sidebarFolderName(name, parentName) {
+  const pr = /^pr[-_ ]?reviews?$/i.test(parentName || '') && name.match(/^(\d+)[-_](.+)$/);
+  if (pr) return `#${pr[1]} (${slugToTopic(pr[2].replace(PR_TYPE_PREFIX, '')).split(' ')[0]})`;
+  // Only slugs are rewritten; a folder already named in plain words is left alone.
+  return /[-_]/.test(name) || name === name.toLowerCase() ? slugToTopic(name) : name;
+}
+
+function sidebarFileName(title, fileId, parentName) {
+  const version = fileId.split('/').pop().match(/^(v\d+)\.md$/i);
+  if (version) return version[1].toLowerCase();
+  if (!parentName) return title;
+  const phrase = parentName
+    .split(/[-_\s]+/)
+    .map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+    .join('\\s+');
+  const context = `${phrase.replace(/s$/i, '')}s?`;
+  const prefix = title.match(new RegExp(`^${context}\\s*[:\u2014\u2013-]\\s+(.+)$`, 'i'));
+  if (prefix) return prefix[1];
+  const suffix = title.match(new RegExp(`^(.+?)\\s+[\u2014\u2013-]\\s+${context}$`, 'i'));
+  return suffix ? suffix[1] : title;
+}
+
 function ticketKeyLabel(branch) {
   const m = branch.match(/^([A-Za-z]+-\d+)-?(.*)$/);
   if (!m) return prettyName(branch);
@@ -302,15 +340,16 @@ function buildDocsNodeEl(node, project, q, parentPath) {
     return buildTicketEl(t, q);
   }
   if (node.type === 'file') {
-    return buildFileDocEl(node, project);
+    return buildFileDocEl(node, project, parentPath);
   }
   return buildFolderDocEl(node, project, q, parentPath);
 }
 
-function buildFileDocEl(node, project) {
+function buildFileDocEl(node, project, parentPath) {
   const btn = document.createElement('button');
   btn.className = 'tree-row tree-doc' + (state.selectedKey === node.fileId ? ' active' : '');
-  btn.innerHTML = `<span class="tree-title" title="${escapeAttr(node.name)}">${escapeText(node.name)}</span>`;
+  const parentName = parentPath ? parentPath.split('/').pop() : '';
+  btn.innerHTML = `<span class="tree-title" title="${escapeAttr(node.name)}">${escapeText(sidebarFileName(node.name, node.fileId, parentName))}</span>`;
   btn.addEventListener('click', () => selectStandaloneDoc(project.repo, node));
   return btn;
 }
@@ -325,7 +364,7 @@ function buildFolderDocEl(node, project, q, parentPath) {
 
   const header = document.createElement('button');
   header.className = 'tree-row tree-ticket-header';
-  header.innerHTML = `<span class="chevron ${expanded ? 'open' : ''}">${treeIcon('chevron')}</span><span class="tree-title" title="${escapeAttr(node.name)}">${escapeText(node.name)}</span>`;
+  header.innerHTML = `<span class="chevron ${expanded ? 'open' : ''}">${treeIcon('chevron')}</span><span class="tree-title" title="${escapeAttr(node.name)}">${escapeText(sidebarFolderName(node.name, parentPath.split('/').pop()))}</span>`;
   wrap.appendChild(header);
 
   const body = document.createElement('div');
